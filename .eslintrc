@@ -1,0 +1,9 @@
+{
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "quotes": [2, "single"],
+    "indent": [2, 2, {"indentSwitchCase": true}]
+  }
+}
