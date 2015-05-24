@@ -11,8 +11,8 @@
   ],
   "author": "Marius Rumpf <marius@mariusrumpf.de>",
   "dependencies": {
-    "dissolve": "^0.3.3",
-    "lodash": "^3.8.0"
+    "lodash": "^3.8.0",
+    "ref": "^1.0.2"
   },
   "devDependencies": {
     "babel": "^5.2.17",
@@ -23,7 +23,6 @@
   "scripts": {
     "test": "mocha --growl --reporter spec --ui tdd --compilers js:babel/register test/unit/*-test.js",
     "lint": "eslint lib/ test/",
-
     "pretest": "npm run lint"
   },
   "main": "./lib/lifx",

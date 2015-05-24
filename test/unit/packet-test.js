@@ -18,8 +18,9 @@ suite('Packet', () => {
     assert.equal(parsed.source, '3e805108');
     assert.equal(parsed.target, '000000000000');
     assert.equal(parsed.site, '');
+    assert.equal(parsed.type, 2);
     assert.equal(parsed.sequence, 0);
-    assert.isNull(parsed.time);
+    assert.equal(parsed.time, 0);
     assert.isTrue(parsed.reserved1.equals(new Buffer('0000', 'hex')));
     assert.isTrue(parsed.reserved2.equals(new Buffer('00', 'hex')));
     assert.isTrue(parsed.reserved3.equals(new Buffer('0000', 'hex')));
@@ -38,7 +39,8 @@ suite('Packet', () => {
     assert.equal(parsed.target, 'd073d5006d72');
     assert.equal(parsed.site, 'LIFXV2');
     assert.equal(parsed.sequence, 0);
-    assert.equal(parsed.time.getTime(), new Date(1431893395075).getTime());
+    assert.equal(parsed.type, 17);
+    assert.equal(parsed.time, '1431893395075000004');
     assert.isTrue(parsed.reserved1.equals(new Buffer('0000', 'hex')));
     assert.isTrue(parsed.reserved2.equals(new Buffer('00', 'hex')));
     assert.isTrue(parsed.reserved3.equals(new Buffer('0000', 'hex')));
@@ -57,7 +59,8 @@ suite('Packet', () => {
     assert.equal(parsed.target, 'd073d5006d72');
     assert.equal(parsed.site, 'LIFXV2');
     assert.equal(parsed.sequence, 0);
-    assert.equal(parsed.time.getTime(), new Date(1431980150063).getTime());
+    assert.equal(parsed.type, 56);
+    assert.equal(parsed.time, '1431980150063000004');
     assert.isTrue(parsed.reserved1.equals(new Buffer('0000', 'hex')));
     assert.isTrue(parsed.reserved2.equals(new Buffer('00', 'hex')));
     assert.isTrue(parsed.reserved3.equals(new Buffer('0000', 'hex')));
@@ -76,7 +79,8 @@ suite('Packet', () => {
     assert.equal(parsed.target, 'd073d5006d72');
     assert.equal(parsed.site, 'LIFXV2');
     assert.equal(parsed.sequence, 7);
-    assert.isNull(parsed.time);
+    assert.equal(parsed.type, 51);
+    assert.equal(parsed.time, 0);
     assert.isTrue(parsed.reserved1.equals(new Buffer('0000', 'hex')));
     assert.isTrue(parsed.reserved2.equals(new Buffer('00', 'hex')));
     assert.isTrue(parsed.reserved3.equals(new Buffer('0000', 'hex')));
@@ -100,15 +104,26 @@ suite('Packet', () => {
       size: 36,
       addressable: true,
       tagged: true,
-      origin: false,
       protocolVersion: 1024,
       source: '3e805108',
-      target: '000000000000',
-      site: '',
-      sequence: 0,
-      time: null,
       type: 2
     };
+    parsed = packet.toBuffer(obj);
+    assert.isTrue(parsed.equals(expectedResult));
+
+    expectedResult = new Buffer('5c00005442524b52d073d5006d7200004c49465856320000c469ea095c6adf1338000000', 'hex');
+    obj = {
+      size: 92,
+      addressable: true,
+      origin: true,
+      source: '42524b52',
+      target: 'd073d5006d72',
+      site: 'LIFXV2',
+      sequence: 0,
+      type: 56,
+      time: '1431980150063000004'
+    };
+
     parsed = packet.toBuffer(obj);
     assert.isTrue(parsed.equals(expectedResult));
   });
