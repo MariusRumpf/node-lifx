@@ -1,0 +1,25 @@
+environment:
+  matrix:
+    # node.js
+    - nodejs_version: "0.10"
+    - nodejs_version: "0.12"
+    # io.js
+    - nodejs_version: "1.0"
+    - nodejs_version: "2.0"
+
+platform:
+  - x86
+  - x64
+
+install:
+  - ps: Install-Product node $env:nodejs_version $env:platform
+  - npm install
+
+test_script:
+  - node --version
+  - npm --version
+  - npm test
+
+build: off
+
+version: "{build}"
