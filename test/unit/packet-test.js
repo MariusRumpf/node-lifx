@@ -2,8 +2,6 @@
 
 var packet = require('../../').packet;
 var assert = require('chai').assert;
-// Buffer.equals() for v0.10
-require('buffer-equals-polyfill');
 
 suite('Packet', () => {
   test('header to object', () => {

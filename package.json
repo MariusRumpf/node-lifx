@@ -24,7 +24,6 @@
   },
   "devDependencies": {
     "babel": "^5.2.17",
-    "buffer-equals-polyfill": "^1.0.0",
     "chai": "^2.3.0",
     "eslint": "^0.21.0",
     "mocha": "^2.2.4"
