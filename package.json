@@ -3,6 +3,14 @@
   "version": "1.0.0",
   "description": "Implementation of the LIFX bulb protocol on node.js.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MariusRumpf/node-lifx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MariusRumpf/node-lifx/issues"
+  },
+  "homepage": "https://github.com/MariusRumpf/node-lifx#readme",
   "keywords": [
     "lifx",
     "bulb",
@@ -16,6 +24,7 @@
   },
   "devDependencies": {
     "babel": "^5.2.17",
+    "buffer-equals-polyfill": "^1.0.0",
     "chai": "^2.3.0",
     "eslint": "^0.21.0",
     "mocha": "^2.2.4"
@@ -26,5 +35,8 @@
     "pretest": "npm run lint"
   },
   "main": "./lib/lifx",
-  "optionalDependencies": {}
+  "optionalDependencies": {},
+  "directories": {
+    "test": "test"
+  }
 }
