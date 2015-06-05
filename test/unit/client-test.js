@@ -13,12 +13,12 @@ suite('Client', () => {
     client.destroy();
   });
 
-  test('no connection by default', () => {
+  test('not connected by default', () => {
     assert.isNull(client.address());
   });
 
-  test('connection after init', () => {
-    client.init({}, function() {
+  test('connected after init', () => {
+    client.init({}, () => {
       assert.isObject(client.address());
       assert.property(client.address(), 'address');
       assert.property(client.address(), 'port');
@@ -29,9 +29,15 @@ suite('Client', () => {
     client.init({
       address: '127.0.0.1',
       port: 57500
-    }, function() {
+    }, () => {
       assert.equal(client.address().address, '127.0.0.1');
       assert.equal(client.address().port, 57500);
     });
+  });
+
+  test('discovery', () => {
+    // @TODO
+    client.startDiscovery();
+    client.stopDiscovery();
   });
 });

@@ -1,41 +1,41 @@
 {
   "name": "node-lifx",
-  "version": "1.0.0",
   "description": "Implementation of the LIFX bulb protocol on node.js.",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/MariusRumpf/node-lifx.git"
-  },
+  "version": "1.0.0",
+  "author": "Marius Rumpf <marius@mariusrumpf.de>",
   "bugs": {
     "url": "https://github.com/MariusRumpf/node-lifx/issues"
   },
-  "homepage": "https://github.com/MariusRumpf/node-lifx#readme",
-  "keywords": [
-    "lifx",
-    "bulb",
-    "lightbulb",
-    "light"
-  ],
-  "author": "Marius Rumpf <marius@mariusrumpf.de>",
   "dependencies": {
     "lodash": "^3.8.0",
     "ref": "^1.0.2"
   },
   "devDependencies": {
     "babel": "^5.2.17",
-    "chai": "^2.3.0",
-    "eslint": "^0.21.0",
+    "chai": "^3.0.0",
+    "eslint": "^0.22.1",
     "mocha": "^2.2.4"
   },
-  "scripts": {
-    "test": "mocha --growl --reporter spec --ui tdd --compilers js:babel/register test/unit/*-test.js",
-    "lint": "eslint lib/ test/",
-    "pretest": "npm run lint"
-  },
-  "main": "./lib/lifx",
-  "optionalDependencies": {},
   "directories": {
     "test": "test"
+  },
+  "homepage": "https://github.com/MariusRumpf/node-lifx#readme",
+  "keywords": [
+    "bulb",
+    "lifx",
+    "light",
+    "lightbulb"
+  ],
+  "license": "MIT",
+  "main": "./lib/lifx",
+  "optionalDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MariusRumpf/node-lifx.git"
+  },
+  "scripts": {
+    "lint": "eslint lib/ test/",
+    "pretest": "npm run lint",
+    "test": "mocha --growl --reporter spec --ui tdd --require babelhook test/unit/*-test.js"
   }
 }
