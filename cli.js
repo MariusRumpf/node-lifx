@@ -8,9 +8,20 @@ client.on('error', function (err) {
   client.destroy();
 });
 
-// client.on('message', function (msg, rinfo) {
-//   console.log(msg, ' from ' + rinfo.address);
-// });
+client.on('message', function (msg, rinfo) {
+  if (typeof msg.type === 'string') {
+    switch (msg.type) {
+      case 'stateHostInfo':
+      case 'stateHostFirmware':
+      case 'stateWifiInfo':
+      case 'stateWifiFirmware':
+        console.log(msg, ' from ' + rinfo.address);
+      break;
+    }
+  } else {
+    console.log(msg, ' from ' + rinfo.address);
+  }
+});
 
 client.on('gateway', function (gateway) {
   console.log('New bulb found: ' + gateway.address);
@@ -18,8 +29,10 @@ client.on('gateway', function (gateway) {
 
 client.on('listening', function () {
   var address = client.address();
-  console.log('Started LIFX listening on ' +
-      address.address + ':' + address.port);
+  console.log(
+    'Started LIFX listening on ' +
+    address.address + ':' + address.port
+  );
 });
 
 client.init({
