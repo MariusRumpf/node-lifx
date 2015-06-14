@@ -8,8 +8,12 @@ client.on('error', function (err) {
   client.destroy();
 });
 
-client.on('message', function (msg, rinfo) {
-  console.log(msg, ' from ' + rinfo.address);
+// client.on('message', function (msg, rinfo) {
+//   console.log(msg, ' from ' + rinfo.address);
+// });
+
+client.on('gateway', function (gateway) {
+  console.log('New bulb found: ' + gateway.address);
 });
 
 client.on('listening', function () {
@@ -18,4 +22,6 @@ client.on('listening', function () {
       address.address + ':' + address.port);
 });
 
-client.init();
+client.init({
+  // debug: true
+});
