@@ -15,6 +15,7 @@ client.on('message', function (msg, rinfo) {
       case 'stateHostFirmware':
       case 'stateWifiInfo':
       case 'stateWifiFirmware':
+      case 'echoResponse':
         console.log(msg, ' from ' + rinfo.address);
       break;
     }
