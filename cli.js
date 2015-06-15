@@ -16,6 +16,13 @@ client.on('message', function (msg, rinfo) {
       case 'stateWifiInfo':
       case 'stateWifiFirmware':
       case 'echoResponse':
+      case 'getOwner':
+      case 'stateOwner':
+      case 'getGroup':
+      case 'stateGroup':
+      case 'getLocation':
+      case 'stateLocation':
+      case 'stateTemperature':
         console.log(msg, ' from ' + rinfo.address);
       break;
     }
