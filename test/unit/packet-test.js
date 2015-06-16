@@ -99,7 +99,7 @@ suite('Packet', () => {
     let parsed = Packet.toBuffer(obj);
     assert.isTrue(parsed.equals(expectedResult));
 
-    expectedResult = new Buffer('5c00005442524b52d073d5006d7200004c49465856320000c469ea095c6adf1338000000', 'hex');
+    expectedResult = new Buffer('5c00005442524b52d073d5006d7200004c49465856320000c469ea095c6adf13380000001438456c47c442a9b2603b45972218170000000000000000000000000000000000000000000000000000000000000000406e62fc12f4b913', 'hex');
     obj = {
       size: 92,
       addressable: true,
@@ -108,8 +108,11 @@ suite('Packet', () => {
       target: 'd073d5006d72',
       site: 'LIFXV2',
       sequence: 0,
-      type: 56,
-      time: '1431980150063000004'
+      type: 'stateOwner',
+      time: '1431980150063000004',
+      owner: '1438456c47c442a9b2603b4597221817',
+      label: '',
+      updatedAt: '1421435519793000000'
     };
 
     parsed = Packet.toBuffer(obj);
