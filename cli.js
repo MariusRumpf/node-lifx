@@ -19,10 +19,14 @@ client.on('message', function (msg, rinfo) {
       case 'getOwner':
       case 'stateOwner':
       case 'getGroup':
+      case 'getVersion':
+      case 'stateVersion':
       case 'stateGroup':
       case 'getLocation':
       case 'stateLocation':
       case 'stateTemperature':
+      case 'stateLight':
+      case 'statePower':
         console.log(msg, ' from ' + rinfo.address);
       break;
     }
