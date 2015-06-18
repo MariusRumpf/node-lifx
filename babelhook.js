@@ -5,5 +5,5 @@
 
 require('babel/register')({
   // Only compile test files
-  only: /-test.js$/g
+  only: /-test.js$/
 });
