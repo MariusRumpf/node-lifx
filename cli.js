@@ -35,19 +35,23 @@ client.on('message', function (msg, rinfo) {
   }
 });
 
-client.on('bulb-add', function (gateway) {
-  console.log('New bulb found: ' + gateway.address);
+client.on('bulb-new', function (bulb) {
+  console.log('New bulb found: ' + bulb.ip + ':' + bulb.port);
 });
 
-client.on('bulb-remove', function (gateway) {
-  console.log('Bulb no longer found: ' + gateway.address);
+client.on('bulb-online', function (bulb) {
+  console.log('Bulb back online: ' + bulb.ip + ':' + bulb.port);
+});
+
+client.on('bulb-offline', function (bulb) {
+  console.log('Bulb offline: ' + bulb.ip + ':' + bulb.port);
 });
 
 client.on('listening', function () {
   var address = client.address();
   console.log(
     'Started LIFX listening on ' +
-    address.address + ':' + address.port
+    address.ip + ':' + address.port
   );
 });
 
