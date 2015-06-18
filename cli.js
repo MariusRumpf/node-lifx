@@ -35,8 +35,12 @@ client.on('message', function (msg, rinfo) {
   }
 });
 
-client.on('gateway', function (gateway) {
+client.on('bulb-add', function (gateway) {
   console.log('New bulb found: ' + gateway.address);
+});
+
+client.on('bulb-remove', function (gateway) {
+  console.log('Bulb no longer found: ' + gateway.address);
 });
 
 client.on('listening', function () {
