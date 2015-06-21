@@ -17,27 +17,38 @@ suite('Client', () => {
     assert.isNull(client.address());
   });
 
-  test('connected after init', () => {
+  test('connected after init', (done) => {
     client.init({}, () => {
       assert.isObject(client.address());
       assert.property(client.address(), 'address');
       assert.property(client.address(), 'port');
+      done();
     });
   });
 
-  test('accepts init parameters', () => {
+  test('accepts init parameters', (done) => {
     client.init({
       address: '127.0.0.1',
-      port: 57500
+      port: 57500,
+      source: '12345678',
+      debug: true
     }, () => {
       assert.equal(client.address().address, '127.0.0.1');
       assert.equal(client.address().port, 57500);
+      assert.equal(client.source, '12345678');
+      assert.isTrue(client.debug);
+      done();
     });
   });
 
-  test('discovery', () => {
-    // @TODO
-    client.startDiscovery();
-    client.stopDiscovery();
+  test('discovery start and stop', (done) => {
+    client.init({}, () => {
+      assert.isObject(client.discoveryTimer);
+      client.stopDiscovery();
+      assert.isNull(client.discoveryTimer);
+      client.startDiscovery();
+      assert.isObject(client.discoveryTimer);
+      done();
+    });
   });
 });
