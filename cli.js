@@ -36,22 +36,23 @@ client.on('message', function (msg, rinfo) {
 });
 
 client.on('bulb-new', function (bulb) {
-  console.log('New bulb found: ' + bulb.ip + ':' + bulb.port);
+  console.log('New bulb found: ' + bulb.address + ':' + bulb.port);
+  console.log(client.listLights());
 });
 
 client.on('bulb-online', function (bulb) {
-  console.log('Bulb back online: ' + bulb.ip + ':' + bulb.port);
+  console.log('Bulb back online: ' + bulb.address + ':' + bulb.port);
 });
 
 client.on('bulb-offline', function (bulb) {
-  console.log('Bulb offline: ' + bulb.ip + ':' + bulb.port);
+  console.log('Bulb offline: ' + bulb.address + ':' + bulb.port);
 });
 
 client.on('listening', function () {
   var address = client.address();
   console.log(
     'Started LIFX listening on ' +
-    address.ip + ':' + address.port
+    address.address + ':' + address.port
   );
 });
 

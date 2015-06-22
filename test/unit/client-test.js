@@ -51,4 +51,62 @@ suite('Client', () => {
       done();
     });
   });
+
+  test('finding bulbs by different parameters', () => {
+    let bulbs = [{
+        site: 'LIFXV2',
+        id: '0dd124d25597',
+        address: '192.168.0.8',
+        port: 56700,
+        status: 'off'
+      }, {
+        site: 'LIFXV2',
+        id: 'ad227d95517z',
+        address: '192.168.254.254',
+        port: 56700,
+        status: 'on'
+      }, {
+        site: 'LIFXV2',
+        id: '783rbc67cg14',
+        address: '192.168.1.5',
+        port: 56700,
+        status: 'on'
+      }, {
+        site: 'LIFXV2',
+        id: '783rbc67cg14',
+        address: 'FE80::903A:1C1A:E802:11E4',
+        port: 56700,
+        status: 'on'
+    }];
+
+    client.gateways = bulbs;
+    assert.deepEqual(client.listLights(), bulbs);
+
+    let result;
+    result = client.findLights('0dd124d25597');
+    assert.isObject(result);
+    assert.equal(result.address, '192.168.0.8');
+
+    result = client.findLights('FE80::903A:1C1A:E802:11E4');
+    assert.isObject(result);
+    assert.equal(result.id, '783rbc67cg14');
+
+    result = client.findLights('192.168.254.254');
+    assert.isObject(result);
+    assert.equal(result.id, 'ad227d95517z');
+
+    result = client.findLights('141svsdvsdv1');
+    assert.isFalse(result);
+
+    result = client.findLights('192.168.0.1');
+    assert.isFalse(result);
+
+    assert.throw(() => {
+      client.findLights({id: '0123456789012'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.findLights(['12a135r25t24']);
+    }, TypeError);
+  });
 });
