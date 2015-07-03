@@ -6,7 +6,7 @@ var assert = require('chai').assert;
 suite('Packet', () => {
   test('header to object', () => {
     let msg = new Buffer('240000343e80510800000000000000000000000000000000000000000000000002000000', 'hex');
-    let parsed = Packet.toObject(msg);
+    let parsed = Packet.headerToObject(msg);
 
     assert.isObject(parsed);
     assert.equal(parsed.size, 36);
@@ -26,7 +26,7 @@ suite('Packet', () => {
     assert.isTrue(parsed.reserved2.equals(new Buffer('0000', 'hex')));
 
     msg = new Buffer('3200005442524b52d073d5006d7200004c49465856320000c466acd1741bdf13110000001ddb86343fe90100e61701000000', 'hex');
-    parsed = Packet.toObject(msg);
+    parsed = Packet.headerToObject(msg);
 
     assert.isObject(parsed);
     assert.equal(parsed.size, 50);
@@ -46,7 +46,7 @@ suite('Packet', () => {
     assert.isTrue(parsed.reserved2.equals(new Buffer('0000', 'hex')));
 
     msg = new Buffer('5c00005442524b52d073d5006d7200004c49465856320000c469ea095c6adf13380000001438456c47c442a9b2603b45972218170000000000000000000000000000000000000000000000000000000000000000406e62fc12f4b913', 'hex');
-    parsed = Packet.toObject(msg);
+    parsed = Packet.headerToObject(msg);
 
     assert.isObject(parsed);
     assert.equal(parsed.size, 92);
@@ -66,7 +66,7 @@ suite('Packet', () => {
     assert.isTrue(parsed.reserved2.equals(new Buffer('0000', 'hex')));
 
     msg = new Buffer('24000014953C1B08D073D5006D7200004C49465856320007000000000000000033000000', 'hex');
-    parsed = Packet.toObject(msg);
+    parsed = Packet.headerToObject(msg);
 
     assert.isObject(parsed);
     assert.equal(parsed.size, 36);
@@ -96,13 +96,12 @@ suite('Packet', () => {
       source: '3e805108',
       type: 2
     };
-    let parsed = Packet.toBuffer(obj);
+    let parsed = Packet.headerToBuffer(obj);
     assert.isTrue(parsed.equals(expectedResult));
 
-    expectedResult = new Buffer('5c00005442524b52d073d5006d7200004c49465856320000c469ea095c6adf13380000001438456c47c442a9b2603b45972218170000000000000000000000000000000000000000000000000000000000000000406e62fc12f4b913', 'hex');
+    expectedResult = new Buffer('5c00005442524b52d073d5006d7200004c49465856320000c469ea095c6adf1338000000', 'hex');
     obj = {
       size: 92,
-      addressable: true,
       origin: true,
       source: '42524b52',
       target: 'd073d5006d72',
@@ -115,7 +114,7 @@ suite('Packet', () => {
       updatedAt: '1421435519793000000'
     };
 
-    parsed = Packet.toBuffer(obj);
+    parsed = Packet.headerToBuffer(obj);
     assert.isTrue(parsed.equals(expectedResult));
   });
 
@@ -124,7 +123,6 @@ suite('Packet', () => {
     assert.isObject(genPacket);
     assert.equal(genPacket.type, 2);
     assert.equal(genPacket.size, 36);
-    assert.equal(genPacket.addressable, true);
     assert.equal(genPacket.tagged, true);
     assert.equal(genPacket.source, '42524b52');
     assert.equal(genPacket.target, 'd073d5006d72');

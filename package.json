@@ -14,7 +14,7 @@
   "devDependencies": {
     "babel": "^5.2.17",
     "chai": "^3.0.0",
-    "eslint": "^0.23.0",
+    "eslint": "^0.24.0",
     "mocha": "^2.2.4"
   },
   "directories": {
@@ -37,6 +37,6 @@
   "scripts": {
     "lint": "eslint lib/ test/",
     "pretest": "npm run lint",
-    "test": "mocha --growl --reporter spec --ui tdd --require babelhook test/unit/*-test.js"
+    "test": "mocha --growl --reporter spec --ui tdd --require babelhook --recursive test/unit/"
   }
 }
