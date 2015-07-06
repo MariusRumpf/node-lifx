@@ -87,10 +87,11 @@ suite('Packet', () => {
   });
 
   test('header to buffer', () => {
-    let expectedResult = new Buffer('240000343e80510800000000000000000000000000000000000000000000000002000000', 'hex');
+    let expectedResult;
+
+    expectedResult = new Buffer('240000343e80510800000000000000000000000000000000000000000000000002000000', 'hex');
     let obj = {
       size: 36,
-      addressable: true,
       tagged: true,
       protocolVersion: 1024,
       source: '3e805108',

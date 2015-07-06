@@ -1,6 +1,7 @@
 'use strict';
 
 var Lifx = require('../../').Client;
+var packet = require('../../').packet;
 var assert = require('chai').assert;
 var client = null;
 
@@ -41,13 +42,25 @@ suite('Client', () => {
     });
   });
 
+  test('inits with random source by default', (done) => {
+    client.init({
+      startDiscovery: false
+    }, () => {
+      assert.typeOf(client.source, 'string');
+      assert.lengthOf(client.source, 8);
+      done();
+    });
+  });
+
   test('discovery start and stop', (done) => {
-    client.init({}, () => {
-      assert.isObject(client.discoveryTimer);
-      client.stopDiscovery();
+    client.init({
+      startDiscovery: false
+    }, () => {
       assert.isNull(client.discoveryTimer);
       client.startDiscovery();
       assert.isObject(client.discoveryTimer);
+      client.stopDiscovery();
+      assert.isNull(client.discoveryTimer);
       done();
     });
   });
@@ -83,30 +96,43 @@ suite('Client', () => {
     assert.deepEqual(client.listLights(), bulbs);
 
     let result;
-    result = client.findLights('0dd124d25597');
+    result = client.findLight('0dd124d25597');
     assert.isObject(result);
     assert.equal(result.address, '192.168.0.8');
 
-    result = client.findLights('FE80::903A:1C1A:E802:11E4');
+    result = client.findLight('FE80::903A:1C1A:E802:11E4');
     assert.isObject(result);
     assert.equal(result.id, '783rbc67cg14');
 
-    result = client.findLights('192.168.254.254');
+    result = client.findLight('192.168.254.254');
     assert.isObject(result);
     assert.equal(result.id, 'ad227d95517z');
 
-    result = client.findLights('141svsdvsdv1');
+    result = client.findLight('141svsdvsdv1');
     assert.isFalse(result);
 
-    result = client.findLights('192.168.0.1');
+    result = client.findLight('192.168.0.1');
     assert.isFalse(result);
 
     assert.throw(() => {
-      client.findLights({id: '0123456789012'});
+      client.findLight({id: '0123456789012'});
     }, TypeError);
 
     assert.throw(() => {
-      client.findLights(['12a135r25t24']);
+      client.findLight(['12a135r25t24']);
     }, TypeError);
+  });
+
+  test('package sending', (done) => {
+    client.init({
+      startDiscovery: false
+    }, () => {
+      assert.lengthOf(client.messagesQueue, 0, 'is empty');
+      client.send(packet.create('getService', {}, '12345678'));
+      assert.lengthOf(client.messagesQueue, 1);
+      assert.property(client.messagesQueue[0], 'data');
+      assert.notProperty(client.messagesQueue[0], 'address');
+      done();
+    });
   });
 });
