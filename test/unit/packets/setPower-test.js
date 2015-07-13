@@ -7,16 +7,17 @@ suite('Packet setPower', () => {
   suite('create', () => {
     test('power off', () => {
       let packet = Packet.create('setPower', {level: 0}, 'ff2c4807', 'd073d5006d72');
-      assert.equal(packet.size, 38);
+      assert.equal(packet.size, 42);
       assert.equal(packet.level, 0);
-      assert.equal(packet.type, 21);
+      assert.equal(packet.type, 117);
     });
 
-    test('power on', () => {
-      let packet = Packet.create('setPower', {level: 65535}, 'ff2c4807', 'd073d5006d72');
-      assert.equal(packet.size, 38);
+    test('power on over time', () => {
+      let packet = Packet.create('setPower', {level: 65535, duration: 300}, 'ff2c4807', 'd073d5006d72');
+      assert.equal(packet.size, 42);
       assert.equal(packet.level, 65535);
-      assert.equal(packet.type, 21);
+      assert.equal(packet.duration, 300);
+      assert.equal(packet.type, 117);
     });
   });
 });
