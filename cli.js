@@ -37,7 +37,6 @@ client.on('message', function (msg, rinfo) {
 
 client.on('bulb-new', function (bulb) {
   console.log('New bulb found: ' + bulb.address + ':' + bulb.port);
-  console.log(client.listLights());
 });
 
 client.on('bulb-online', function (bulb) {
