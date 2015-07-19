@@ -132,4 +132,53 @@ suite('Client', () => {
       done();
     });
   });
+
+  suite('message handler', () => {
+    test('discovery message handler registered by default', () => {
+      assert.lengthOf(client.messageHandlers, 1);
+      assert.equal(client.messageHandlers[0].type, 'stateService');
+    });
+
+    test('adding valid message handlers', () => {
+      let prevMsgHandlerCount = client.messageHandlers.length;
+      client.addMessageHandler('stateLight', () => {}, 1);
+      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
+      assert.equal(client.messageHandlers[1].type, 'stateLight', 'correct handler type');
+    });
+
+    test('adding invalid message handlers', () => {
+      assert.throw(() => {
+        client.addMessageHandler('stateLight', () => {}, '1');
+      }, TypeError);
+    });
+
+    test('removing one time handlers after call', (done) => {
+      let prevMsgHandlerCount = client.messageHandlers.length;
+      client.addMessageHandler('temporaryHandler', () => {
+        done(); // Make sure callback is called
+      }, 1);
+      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
+
+      // emit a fake message, rinfo is not relevant for fake
+      client.processMessageHandlers({
+        type: 'temporaryHandler',
+        sequenceNumber: 1
+      }, {});
+
+      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount, 'message handler has been removed');
+    });
+
+    test('keeping permanent handlers after call', (done) => {
+      let prevMsgHandlerCount = client.messageHandlers.length;
+      client.addMessageHandler('permanentHandler', () => {
+        done(); // Make sure callback is called
+      });
+      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
+
+      // emit a fake message, rinfo is not relevant for fake
+      client.processMessageHandlers({ type: 'permanentHandler' }, {});
+
+      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler is still present');
+    });
+  });
 });
