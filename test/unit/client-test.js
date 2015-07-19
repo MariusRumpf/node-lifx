@@ -3,14 +3,15 @@
 var Lifx = require('../../').Client;
 var packet = require('../../').packet;
 var assert = require('chai').assert;
-var client = null;
 
 suite('Client', () => {
-  setup(() => {
+  var client;
+
+  beforeEach(() => {
     client = new Lifx();
   });
 
-  teardown(() => {
+  afterEach(() => {
     client.destroy();
   });
 
