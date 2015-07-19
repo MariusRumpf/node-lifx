@@ -1,6 +1,6 @@
 {
   "name": "node-lifx",
-  "description": "Implementation of the LIFX bulb protocol v2.",
+  "description": "Node.js implementation of the LIFX protocol",
   "version": "0.0.1",
   "author": "Marius Rumpf <marius@mariusrumpf.de>",
   "bugs": {
