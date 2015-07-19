@@ -10,6 +10,8 @@ client.on('error', function (err) {
 
 client.on('message', function (msg, rinfo) {
   if (typeof msg.type === 'string') {
+    // Known packages send by the bulbs
+    // as broadcast
     switch (msg.type) {
       case 'stateHostInfo':
       case 'stateHostFirmware':
@@ -31,6 +33,7 @@ client.on('message', function (msg, rinfo) {
       break;
     }
   } else {
+    // Unknown message type
     console.log(msg, ' from ' + rinfo.address);
   }
 });
@@ -55,6 +58,4 @@ client.on('listening', function () {
   );
 });
 
-client.init({
-  // debug: true
-});
+client.init();
