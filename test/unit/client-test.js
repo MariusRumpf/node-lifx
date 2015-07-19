@@ -5,7 +5,7 @@ var packet = require('../../').packet;
 var assert = require('chai').assert;
 
 suite('Client', () => {
-  var client;
+  let client;
 
   beforeEach(() => {
     client = new Lifx();
