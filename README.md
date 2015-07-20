@@ -11,6 +11,12 @@ This library is still under development and not to be considered stable. Method 
 
 This library is not, in any way, affiliated or related to LiFi Labs, Inc.. Use it at your own risk.
 
+## Installation
+
+```sh
+$ npm install node-lifx --save
+```
+
 ## Usage
 The file `cli.js` contains a working example.
 
