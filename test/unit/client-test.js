@@ -231,4 +231,14 @@ suite('Client', () => {
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler is still present');
     });
   });
+
+  test('change debugging mode', () => {
+    assert.equal(client.debug, false);
+
+    client.setDebug(true);
+    assert.equal(client.debug, true);
+
+    client.setDebug(false);
+    assert.equal(client.debug, false);
+  });
 });
