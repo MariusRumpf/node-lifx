@@ -1,6 +1,7 @@
 'use strict';
 
 var Lifx = require('../../').Client;
+var Light = require('../../').Light;
 var packet = require('../../').packet;
 var assert = require('chai').assert;
 
@@ -67,42 +68,59 @@ suite('Client', () => {
   });
 
   test('finding bulbs by different parameters', () => {
-    let bulbs = [{
-        id: '0dd124d25597',
-        address: '192.168.0.8',
-        port: 56700,
-        status: 'off'
-      }, {
-        id: 'ad227d95517z',
-        address: '192.168.254.254',
-        port: 56700,
-        status: 'on'
-      }, {
-        id: '783rbc67cg14',
-        address: '192.168.1.5',
-        port: 56700,
-        status: 'on'
-      }, {
-        id: '783rbc67cg14',
-        address: 'FE80::903A:1C1A:E802:11E4',
-        port: 56700,
-        status: 'on'
-    }];
+    let bulbs = [];
+    let bulb;
+
+    bulb = new Light({
+      client: client,
+      id: '0dd124d25597',
+      address: '192.168.0.8',
+      port: 56700,
+      seenOnDiscovery: 1
+    });
+    bulb.status = 'off';
+    bulbs.push(bulb);
+
+    bulb = new Light({
+      client: client,
+      id: 'ad227d95517z',
+      address: '192.168.254.254',
+      port: 56700,
+      seenOnDiscovery: 1
+    });
+    bulbs.push(bulb);
+
+    bulb = new Light({
+      client: client,
+      id: '783rbc67cg14',
+      address: '192.168.1.5',
+      port: 56700,
+      seenOnDiscovery: 2
+    });
+    bulbs.push(bulb);
+
+    bulb = new Light({
+      client: client,
+      id: '883rbd67cg15',
+      address: 'FE80::903A:1C1A:E802:11E4',
+      port: 56700,
+      seenOnDiscovery: 2
+    });
+    bulbs.push(bulb);
 
     client.devices = bulbs;
-    assert.deepEqual(client.lights(), bulbs);
 
     let result;
     result = client.light('0dd124d25597');
-    assert.isObject(result);
+    assert.instanceOf(result, Light);
     assert.equal(result.address, '192.168.0.8');
 
     result = client.light('FE80::903A:1C1A:E802:11E4');
-    assert.isObject(result);
-    assert.equal(result.id, '783rbc67cg14');
+    assert.instanceOf(result, Light);
+    assert.equal(result.id, '883rbd67cg15');
 
     result = client.light('192.168.254.254');
-    assert.isObject(result);
+    assert.instanceOf(result, Light);
     assert.equal(result.id, 'ad227d95517z');
 
     result = client.light('141svsdvsdv1');
