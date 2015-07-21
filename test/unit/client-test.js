@@ -203,19 +203,30 @@ suite('Client', () => {
     });
 
     test('removing one time handlers after call', (done) => {
+      let mustBeFalse = false;
       let prevMsgHandlerCount = client.messageHandlers.length;
+      let finalChecks = function() {
+        assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 2, 'message handler has been removed');
+        assert.equal(mustBeFalse, false, 'incorrect handler not called');
+        done();
+      };
+
       client.addMessageHandler('temporaryHandler', () => {
-        done(); // Make sure callback is called
+        mustBeFalse = true;
+      }, 2);
+      client.addMessageHandler('temporaryHandler2', () => {
+        mustBeFalse = true;
       }, 1);
-      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
+      client.addMessageHandler('temporaryHandler', () => {
+        finalChecks();
+      }, 1);
+      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 3, 'message handler has been added');
 
       // emit a fake message, rinfo is not relevant for fake
       client.processMessageHandlers({
         type: 'temporaryHandler',
-        sequenceNumber: 1
+        sequence: 1
       }, {});
-
-      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount, 'message handler has been removed');
     });
 
     test('keeping permanent handlers after call', (done) => {
