@@ -151,6 +151,38 @@ suite('Client', () => {
     });
   });
 
+  test('getting all known lights', () => {
+    let bulbs = [];
+    let bulb;
+
+    bulb = new Light({
+      client: client,
+      id: '0dd124d25597',
+      address: '192.168.0.8',
+      port: 56700,
+      seenOnDiscovery: 1
+    });
+    bulbs.push(bulb);
+
+    bulb = new Light({
+      client: client,
+      id: '783rbc67cg14',
+      address: '192.168.0.9',
+      port: 56700,
+      seenOnDiscovery: 1
+    });
+    bulb.status = 'off';
+    bulbs.push(bulb);
+
+    client.devices = bulbs;
+    assert.deepEqual(client.lights(''), bulbs);
+
+    assert.deepEqual(client.lights(), [bulbs[0]]);
+    assert.deepEqual(client.lights('on'), [bulbs[0]]);
+
+    assert.deepEqual(client.lights('off'), [bulbs[1]]);
+  });
+
   suite('message handler', () => {
     test('discovery message handler registered by default', () => {
       assert.lengthOf(client.messageHandlers, 1);

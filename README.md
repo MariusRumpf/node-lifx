@@ -59,8 +59,8 @@ Changes the color off a bulb to the given value.
 `duration` if given (in milliseconds) it will fade the color to the new value over time.  
 Examples: `bulb.color(0, 100, 50)` is red at 50% brightness. `bulb.color(50, 50, 80)` is a light green at 80% brightness.
 
-### List lights
-A list of all bulbs will be returned when calling `client.lights()`.
+### Get all lights
+All active bulbs will be returned as array when calling `client.lights()`. Each object can then be used to individually call methods on it. To get all bulbs call `client.lights('')`. To find all inactive bulbs call `client.lights('off')`.
 
 ### Target a light
-To get a specific light the `client.light` method can be used. It expects an identifier as first parameter, this can be the bulbs ip address `client.light('192.168.2.102')` or the bulb id `client.light('0123456789012')`.
+To get a specific light the `client.light` method can be used. It expects an identifier as first parameter, this can be the bulbs ip address `client.light('192.168.2.102')` or the bulb id `client.light('0123456789012')`. The bulb returned can then be used to call methods on it. For example `client.light('192.168.2.102').on()`.
