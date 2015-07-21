@@ -18,7 +18,9 @@
     "mocha": "^2.2.4"
   },
   "directories": {
-    "test": "test"
+    "test": "test",
+    "lib": "lib",
+    "example": "example"
   },
   "homepage": "https://github.com/MariusRumpf/node-lifx#readme",
   "keywords": [
