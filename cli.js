@@ -27,10 +27,9 @@ client.on('message', function (msg, rinfo) {
       case 'getLocation':
       case 'stateLocation':
       case 'stateTemperature':
-      case 'stateLight':
       case 'statePower':
         console.log(msg, ' from ' + rinfo.address);
-      break;
+        break;
     }
   } else {
     // Unknown message type
