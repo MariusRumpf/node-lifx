@@ -59,6 +59,9 @@ Changes the color off a bulb to the given value.
 `duration` if given (in milliseconds) it will fade the color to the new value over time.  
 Examples: `bulb.color(0, 100, 50)` is red at 50% brightness. `bulb.color(50, 50, 80)` is a light green at 80% brightness.
 
+#### `bulb.get(callback)`
+Requests general info from a bulb, this includes color, label and power state. This function is asynchronous and the info will be given to the provided callback as first parameter.
+
 ### Get all lights
 All active bulbs will be returned as array when calling `client.lights()`. Each object can then be used to individually call methods on it. To get all bulbs call `client.lights('')`. To find all inactive bulbs call `client.lights('off')`.
 
