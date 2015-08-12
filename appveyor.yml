@@ -22,7 +22,6 @@ install:
 
 test_script:
   - node --version && npm --version
-  - ps: "npm test # PowerShell" # Pass comment to PS for easier debugging
   - cmd: npm test
 
 build: off
@@ -31,4 +30,4 @@ matrix:
   fast_finish: true
 
 cache:
-  - '%APPDATA%\npm-cache -> package.json' # npm cache
+  - '%AppData%\npm-cache -> package.json' # npm cache
