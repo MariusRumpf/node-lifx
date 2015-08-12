@@ -8,8 +8,7 @@
   },
   "dependencies": {
     "eventemitter3": "^1.1.0",
-    "lodash": "^3.8.0",
-    "ref": "^1.0.2"
+    "lodash": "^3.8.0"
   },
   "devDependencies": {
     "babel": "^5.2.17",
