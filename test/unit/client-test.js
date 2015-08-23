@@ -34,15 +34,29 @@ suite('Client', () => {
       address: '127.0.0.1',
       port: 57500,
       source: '12345678',
-      debug: true
+      lightOfflineTolerance: 2,
     }, () => {
       assert.equal(client.address().address, '127.0.0.1');
       assert.equal(client.address().port, 57500);
       assert.equal(client.source, '12345678');
-      assert.isTrue(client.debug);
+      assert.equal(client.lightOfflineTolerance, 2);
       done();
     });
   });
+
+  test('init parameters of wrong types throw exception', () => {
+    assert.throw(() => {
+      client.init({port: '57500'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({source: 23456789});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({lightOfflineTolerance: '3'});
+    }, TypeError);
+  })
 
   test('inits with random source by default', (done) => {
     client.init({
@@ -237,14 +251,14 @@ suite('Client', () => {
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
 
       // emit a fake message, rinfo is not relevant for fake
-      client.processMessageHandlers({ type: 'permanentHandler' }, {});
+      client.processMessageHandlers({type:'permanentHandler'}, {});
 
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler is still present');
     });
   });
 
   test('change debugging mode', () => {
-    assert.equal(client.debug, false);
+    assert.equal(client.debug, false, 'debug off by default');
 
     client.setDebug(true);
     assert.equal(client.debug, true);
