@@ -4,6 +4,7 @@ var Lifx = require('../../').Client;
 var Light = require('../../').Light;
 var packet = require('../../').packet;
 var assert = require('chai').assert;
+var sinon = require('sinon');
 
 suite('Client', () => {
   let client;
@@ -35,11 +36,13 @@ suite('Client', () => {
       port: 57500,
       source: '12345678',
       lightOfflineTolerance: 2,
+      messageHandlerTimeout: 12000
     }, () => {
       assert.equal(client.address().address, '127.0.0.1');
       assert.equal(client.address().port, 57500);
       assert.equal(client.source, '12345678');
       assert.equal(client.lightOfflineTolerance, 2);
+      assert.equal(client.messageHandlerTimeout, 12000);
       done();
     });
   });
@@ -55,6 +58,10 @@ suite('Client', () => {
 
     assert.throw(() => {
       client.init({lightOfflineTolerance: '3'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({messageHandlerTimeout: '30000'});
     }, TypeError);
   })
 
@@ -198,6 +205,15 @@ suite('Client', () => {
   });
 
   suite('message handler', () => {
+    beforeEach(function() {
+      this.clock = sinon.useFakeTimers();
+    });
+
+    afterEach(function() {
+      this.clock.restore();
+    });
+
+
     test('discovery message handler registered by default', () => {
       assert.lengthOf(client.messageHandlers, 1);
       assert.equal(client.messageHandlers[0].type, 'stateService');
@@ -208,6 +224,7 @@ suite('Client', () => {
       client.addMessageHandler('stateLight', () => {}, 1);
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
       assert.equal(client.messageHandlers[1].type, 'stateLight', 'correct handler type');
+      assert.equal(client.messageHandlers[1].timestamp / 1000, Date.now() / 1000, 'timestamp set to now');
     });
 
     test('adding invalid message handlers', () => {
@@ -254,6 +271,36 @@ suite('Client', () => {
       client.processMessageHandlers({type:'permanentHandler'}, {});
 
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler is still present');
+    });
+
+    test('removing packets with sequenceNumber, not called after messageHandlerTimeout', () => {
+      let prevMsgHandlerCount = client.messageHandlers.length;
+      let messageHandlerTimeout = 30000;
+
+      client.init({
+        startDiscovery: false,
+        messageHandlerTimeout: messageHandlerTimeout,
+      }, () => {
+        client.addMessageHandler('temporaryHandler', () => {}, 2);
+        assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
+
+        client.processMessageHandlers({type: 'someRandomHandler'}, {});
+        assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'should still exist after instant call');
+
+        setTimeout(() => {
+          client.processMessageHandlers({type: 'someRandomHandler'}, {});
+          assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'should still exist before timeout');
+        }, messageHandlerTimeout - 1);
+
+        setTimeout(() => {
+          client.processMessageHandlers({type: 'someRandomHandler'}, {});
+          assert.lengthOf(client.messageHandlers, prevMsgHandlerCount, 'should be removed after timeout');
+          done();
+        }, messageHandlerTimeout + 1);
+
+        this.clock.tick(messageHandlerTimeout - 1);
+        this.clock.tick(messageHandlerTimeout + 1);
+      });
     });
   });
 
