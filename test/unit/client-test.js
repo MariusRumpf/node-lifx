@@ -214,12 +214,12 @@ suite('Client', () => {
     });
 
 
-    test('discovery message handler registered by default', () => {
+    test('discovery handler registered by default', () => {
       assert.lengthOf(client.messageHandlers, 1);
       assert.equal(client.messageHandlers[0].type, 'stateService');
     });
 
-    test('adding valid message handlers', () => {
+    test('adding valid handlers', () => {
       let prevMsgHandlerCount = client.messageHandlers.length;
       client.addMessageHandler('stateLight', () => {}, 1);
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
@@ -227,31 +227,31 @@ suite('Client', () => {
       assert.equal(client.messageHandlers[1].timestamp / 1000, Date.now() / 1000, 'timestamp set to now');
     });
 
-    test('adding invalid message handlers', () => {
+    test('adding invalid handlers', () => {
       assert.throw(() => {
         client.addMessageHandler('stateLight', () => {}, '1');
       }, TypeError);
     });
 
-    test('removing one time handlers after call', (done) => {
+    test('calling and removing one time handlers after call', (done) => {
       let mustBeFalse = false;
       let prevMsgHandlerCount = client.messageHandlers.length;
-      let finalChecks = function() {
-        assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 2, 'message handler has been removed');
-        assert.equal(mustBeFalse, false, 'incorrect handler not called');
-        done();
-      };
 
       client.addMessageHandler('temporaryHandler', () => {
-        mustBeFalse = true;
+        mustBeFalse = true; // Was falsely triggered
       }, 2);
       client.addMessageHandler('temporaryHandler2', () => {
-        mustBeFalse = true;
+        mustBeFalse = true; // Was falsely triggered
       }, 1);
-      client.addMessageHandler('temporaryHandler', () => {
-        finalChecks();
+      client.addMessageHandler('temporaryHandler', (err, msg, rinfo) => {
+        assert.isNull(err, 'no error');
+        assert.isObject(msg);
+        assert.isObject(rinfo);
+        assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 2, 'this handler has been removed');
+        assert.equal(mustBeFalse, false, 'incorrect handlers not called');
+        done();
       }, 1);
-      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 3, 'message handler has been added');
+      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 3, 'handler has been added');
 
       // emit a fake message, rinfo is not relevant for fake
       client.processMessageHandlers({
@@ -262,40 +262,51 @@ suite('Client', () => {
 
     test('keeping permanent handlers after call', (done) => {
       let prevMsgHandlerCount = client.messageHandlers.length;
-      client.addMessageHandler('permanentHandler', () => {
+      client.addMessageHandler('permanentHandler', (err, msg, rinfo) => {
+        assert.isNull(err, 'no error');
+        assert.isObject(msg);
+        assert.isObject(rinfo);
         done(); // Make sure callback is called
       });
-      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
+      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler has been added');
 
       // emit a fake message, rinfo is not relevant for fake
       client.processMessageHandlers({type:'permanentHandler'}, {});
 
-      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler is still present');
+      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler is still present');
     });
 
-    test('removing packets with sequenceNumber, not called after messageHandlerTimeout', () => {
+    test('calling and removing packets with sequenceNumber, after messageHandlerTimeout', () => {
       let prevMsgHandlerCount = client.messageHandlers.length;
-      let messageHandlerTimeout = 30000;
+      let messageHandlerTimeout = 30000; // Our timeout for the test
 
       client.init({
         startDiscovery: false,
         messageHandlerTimeout: messageHandlerTimeout,
       }, () => {
-        client.addMessageHandler('temporaryHandler', () => {}, 2);
-        assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
+        client.addMessageHandler('temporaryHandler', (err, msg, rinfo) => {
+          assert.instanceOf(err, Error, 'error was thrown');
+          assert.isNull(msg);
+          assert.isNull(rinfo);
+          assert.lengthOf(client.messageHandlers, prevMsgHandlerCount, 'handler should be removed after timeout');
+          done();
+        }, 2);
+        assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler has been added');
 
+        // Instant
         client.processMessageHandlers({type: 'someRandomHandler'}, {});
-        assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'should still exist after instant call');
+        assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler should still exist after instant call');
 
+        // Short before messageHandlerTimeout
         setTimeout(() => {
           client.processMessageHandlers({type: 'someRandomHandler'}, {});
-          assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'should still exist before timeout');
+          assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler should still exist before timeout');
         }, messageHandlerTimeout - 1);
 
+        // Directly after messageHandlerTimeout
         setTimeout(() => {
+          // This will trigger the message handler callback
           client.processMessageHandlers({type: 'someRandomHandler'}, {});
-          assert.lengthOf(client.messageHandlers, prevMsgHandlerCount, 'should be removed after timeout');
-          done();
         }, messageHandlerTimeout + 1);
 
         this.clock.tick(messageHandlerTimeout - 1);
@@ -304,7 +315,7 @@ suite('Client', () => {
     });
   });
 
-  test('change debugging mode', () => {
+  test('changing debugging mode', () => {
     assert.equal(client.debug, false, 'debug off by default');
 
     client.setDebug(true);
