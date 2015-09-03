@@ -1,7 +1,8 @@
 # LIFX Node.js Library
 
-[![Build Status](https://travis-ci.org/MariusRumpf/node-lifx.svg?branch=master)](https://travis-ci.org/MariusRumpf/node-lifx)
-[![Build status](https://ci.appveyor.com/api/projects/status/by1ea0oh53qknq7u?svg=true)](https://ci.appveyor.com/project/MariusRumpf/node-lifx)
+[![NPM Version](https://img.shields.io/npm/v/node-lifx.svg)](https://www.npmjs.com/package/node-lifx)
+[![Build Status](https://img.shields.io/travis/MariusRumpf/node-lifx/master.svg)](https://travis-ci.org/MariusRumpf/node-lifx)
+[![Build status](https://img.shields.io/appveyor/ci/MariusRumpf/node-lifx/master.svg)](https://ci.appveyor.com/project/MariusRumpf/node-lifx)
 [![Dependency Status](https://www.versioneye.com/user/projects/557212093935300021000034/badge.svg?style=flat)](https://www.versioneye.com/user/projects/557212093935300021000034)
 [![Inline docs](http://inch-ci.org/github/mariusrumpf/node-lifx.svg?branch=master)](http://inch-ci.org/github/mariusrumpf/node-lifx)
 
