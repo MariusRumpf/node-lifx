@@ -3,12 +3,12 @@
 var Lifx = require('./lib/lifx').Client;
 var client = new Lifx();
 
-client.on('error', function (err) {
+client.on('error', function(err) {
   console.log('LIFX error:\n' + err.stack);
   client.destroy();
 });
 
-client.on('message', function (msg, rinfo) {
+client.on('message', function(msg, rinfo) {
   if (typeof msg.type === 'string') {
     // Known packages send by the bulbs
     // as broadcast
@@ -30,6 +30,8 @@ client.on('message', function (msg, rinfo) {
       case 'statePower':
         console.log(msg, ' from ' + rinfo.address);
         break;
+      default:
+        break;
     }
   } else {
     // Unknown message type
@@ -37,19 +39,19 @@ client.on('message', function (msg, rinfo) {
   }
 });
 
-client.on('bulb-new', function (bulb) {
+client.on('bulb-new', function(bulb) {
   console.log('New bulb found: ' + bulb.address + ':' + bulb.port);
 });
 
-client.on('bulb-online', function (bulb) {
+client.on('bulb-online', function(bulb) {
   console.log('Bulb back online: ' + bulb.address + ':' + bulb.port);
 });
 
-client.on('bulb-offline', function (bulb) {
+client.on('bulb-offline', function(bulb) {
   console.log('Bulb offline: ' + bulb.address + ':' + bulb.port);
 });
 
-client.on('listening', function () {
+client.on('listening', function() {
   var address = client.address();
   console.log(
     'Started LIFX listening on ' +

@@ -7,10 +7,10 @@ var assert = require('chai').assert;
 suite('Light', () => {
   let client = null;
   let bulb = null;
-  let getMsgQueueLength = () => {
+  const getMsgQueueLength = () => {
     return client.messagesQueue.length;
   };
-  let getMsgHandlerLength = () => {
+  const getMsgHandlerLength = () => {
     return client.messageHandlers.length;
   };
 
@@ -48,7 +48,7 @@ suite('Light', () => {
       bulb.get('test');
     }, TypeError);
 
-    let currHandlerCnt = getMsgHandlerLength();
+    const currHandlerCnt = getMsgHandlerLength();
     bulb.get(() => {});
     assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
   });

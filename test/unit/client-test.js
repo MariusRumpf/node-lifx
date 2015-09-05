@@ -63,7 +63,7 @@ suite('Client', () => {
     assert.throw(() => {
       client.init({messageHandlerTimeout: '30000'});
     }, TypeError);
-  })
+  });
 
   test('inits with random source by default', (done) => {
     client.init({
@@ -89,7 +89,7 @@ suite('Client', () => {
   });
 
   test('finding bulbs by different parameters', () => {
-    let bulbs = [];
+    const bulbs = [];
     let bulb;
 
     bulb = new Light({
@@ -173,7 +173,7 @@ suite('Client', () => {
   });
 
   test('getting all known lights', () => {
-    let bulbs = [];
+    const bulbs = [];
     let bulb;
 
     bulb = new Light({
@@ -213,14 +213,13 @@ suite('Client', () => {
       this.clock.restore();
     });
 
-
     test('discovery handler registered by default', () => {
       assert.lengthOf(client.messageHandlers, 1);
       assert.equal(client.messageHandlers[0].type, 'stateService');
     });
 
     test('adding valid handlers', () => {
-      let prevMsgHandlerCount = client.messageHandlers.length;
+      const prevMsgHandlerCount = client.messageHandlers.length;
       client.addMessageHandler('stateLight', () => {}, 1);
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
       assert.equal(client.messageHandlers[1].type, 'stateLight', 'correct handler type');
@@ -235,7 +234,7 @@ suite('Client', () => {
 
     test('calling and removing one time handlers after call', (done) => {
       let mustBeFalse = false;
-      let prevMsgHandlerCount = client.messageHandlers.length;
+      const prevMsgHandlerCount = client.messageHandlers.length;
 
       client.addMessageHandler('temporaryHandler', () => {
         mustBeFalse = true; // Was falsely triggered
@@ -261,7 +260,7 @@ suite('Client', () => {
     });
 
     test('keeping permanent handlers after call', (done) => {
-      let prevMsgHandlerCount = client.messageHandlers.length;
+      const prevMsgHandlerCount = client.messageHandlers.length;
       client.addMessageHandler('permanentHandler', (err, msg, rinfo) => {
         assert.isNull(err, 'no error');
         assert.isObject(msg);
@@ -271,18 +270,18 @@ suite('Client', () => {
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler has been added');
 
       // emit a fake message, rinfo is not relevant for fake
-      client.processMessageHandlers({type:'permanentHandler'}, {});
+      client.processMessageHandlers({type: 'permanentHandler'}, {});
 
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler is still present');
     });
 
-    test('calling and removing packets with sequenceNumber, after messageHandlerTimeout', () => {
-      let prevMsgHandlerCount = client.messageHandlers.length;
-      let messageHandlerTimeout = 30000; // Our timeout for the test
+    test('calling and removing packets with sequenceNumber, after messageHandlerTimeout', function(done) {
+      const prevMsgHandlerCount = client.messageHandlers.length;
+      const messageHandlerTimeout = 30000; // Our timeout for the test
 
       client.init({
         startDiscovery: false,
-        messageHandlerTimeout: messageHandlerTimeout,
+        messageHandlerTimeout: messageHandlerTimeout
       }, () => {
         client.addMessageHandler('temporaryHandler', (err, msg, rinfo) => {
           assert.instanceOf(err, Error, 'error was thrown');
