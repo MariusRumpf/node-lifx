@@ -45,11 +45,11 @@ suite('Light', () => {
 
   test('getting light summary', () => {
     assert.throw(() => {
-      bulb.get('test');
+      bulb.getState('test');
     }, TypeError);
 
     const currHandlerCnt = getMsgHandlerLength();
-    bulb.get(() => {});
+    bulb.getState(() => {});
     assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
   });
 });

@@ -13,16 +13,11 @@ client.on('message', function(msg, rinfo) {
     // Known packages send by the bulbs
     // as broadcast
     switch (msg.type) {
-      case 'stateHostInfo':
-      case 'stateHostFirmware':
-      case 'stateWifiInfo':
-      case 'stateWifiFirmware':
       case 'echoResponse':
       case 'getOwner':
       case 'stateOwner':
       case 'getGroup':
       case 'getVersion':
-      case 'stateVersion':
       case 'stateGroup':
       case 'getLocation':
       case 'stateLocation':
