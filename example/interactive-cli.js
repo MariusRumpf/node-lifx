@@ -3,19 +3,19 @@
 var LifxClient = require('../lib/lifx').Client;
 var client = new LifxClient();
 
-client.on('bulb-new', function (bulb) {
-  console.log('New bulb found: ' + bulb.address + ':' + bulb.port);
+client.on('light-new', function(light) {
+  console.log('New light found: ' + light.address + ':' + light.port);
 });
 
-client.on('bulb-online', function (bulb) {
-  console.log('Bulb back online: ' + bulb.address + ':' + bulb.port);
+client.on('light-online', function(light) {
+  console.log('Light back online: ' + light.address + ':' + light.port);
 });
 
-client.on('bulb-offline', function (bulb) {
-  console.log('Bulb offline: ' + bulb.address + ':' + bulb.port);
+client.on('light-offline', function(light) {
+  console.log('Light offline: ' + light.address + ':' + light.port);
 });
 
-client.on('listening', function () {
+client.on('listening', function() {
   var address = client.address();
   console.log(
     'Started LIFX listening on ' +
@@ -42,38 +42,38 @@ process.stdin.setRawMode(true);
 
 process.stdin.on('data', function(key) {
   if (key === '1') {
-    client.lights().forEach(function(bulb) {
-      bulb.on();
+    client.lights().forEach(function(light) {
+      light.on();
     });
     console.log('All lights turned on');
   } else if (key === '2') {
-    client.lights().forEach(function(bulb) {
-      bulb.off();
+    client.lights().forEach(function(light) {
+      light.off();
     });
     console.log('All lights turned off');
   } else if (key === '3') {
-    client.lights().forEach(function(bulb) {
-      bulb.color(0, 100, 100);
+    client.lights().forEach(function(light) {
+      light.color(0, 100, 100);
     });
     console.log('All lights turned red');
   } else if (key === '4') {
-    client.lights().forEach(function(bulb) {
-      bulb.color(120, 100, 100);
+    client.lights().forEach(function(light) {
+      light.color(120, 100, 100);
     });
     console.log('All lights turned green');
   } else if (key === '5') {
-    client.lights().forEach(function(bulb) {
-      bulb.color(240, 100, 100);
+    client.lights().forEach(function(light) {
+      light.color(240, 100, 100);
     });
     console.log('All lights turned blue');
   } else if (key === '6') {
-    client.lights().forEach(function(bulb) {
-      bulb.color(0, 0, 100, 9000);
+    client.lights().forEach(function(light) {
+      light.color(0, 0, 100, 9000);
     });
     console.log('All lights turned to bright bluish white');
   } else if (key === '7') {
-    client.lights().forEach(function(bulb) {
-      bulb.color(0, 0, 100, 2500);
+    client.lights().forEach(function(light) {
+      light.color(0, 0, 100, 2500);
     });
     console.log('All lights turned to bright reddish white');
   } else if (key === '8') {

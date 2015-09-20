@@ -10,8 +10,7 @@ client.on('error', function(err) {
 
 client.on('message', function(msg, rinfo) {
   if (typeof msg.type === 'string') {
-    // Known packages send by the bulbs
-    // as broadcast
+    // Known packages send by the lights as broadcast
     switch (msg.type) {
       case 'echoResponse':
       case 'getOwner':
@@ -34,16 +33,16 @@ client.on('message', function(msg, rinfo) {
   }
 });
 
-client.on('bulb-new', function(bulb) {
-  console.log('New bulb found: ' + bulb.address + ':' + bulb.port);
+client.on('light-new', function(light) {
+  console.log('New light found: ' + light.address + ':' + light.port);
 });
 
-client.on('bulb-online', function(bulb) {
-  console.log('Bulb back online: ' + bulb.address + ':' + bulb.port);
+client.on('light-online', function(light) {
+  console.log('Light back online: ' + light.address + ':' + light.port);
 });
 
-client.on('bulb-offline', function(bulb) {
-  console.log('Bulb offline: ' + bulb.address + ':' + bulb.port);
+client.on('light-offline', function(light) {
+  console.log('Light offline: ' + light.address + ':' + light.port);
 });
 
 client.on('listening', function() {
