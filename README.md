@@ -77,3 +77,44 @@ To get a specific light the `client.light` method can be used. It expects an ide
 
 ### Get all known lights
 All active lights will be returned as array when calling `client.lights()`. Each object can then be used to individually call methods on it. To get all lights call `client.lights('')` and to find all inactive lights call `client.lights('off')`.
+
+### Client events
+The following events might be thrown by the client.
+
+#### `light-new`
+This event is thrown when there is a new light discovery that has not been seen at runtime before. This event is provided with the new light object.  
+`client.on('light-new', function(light) {});`
+
+#### `light-offline`
+This event is thrown when a light hasn't been discovered for a time. The light given is no longer expected to be reachable.  
+`client.on('light-offline', function(light) {});`
+
+#### `light-online`
+This event is thrown when a light is discovered again after being offline.
+`client.on('light-online', function(light) {});`
+
+### Start / Stop discovery
+The discovery for each client can be started and stopped at runtime using these commands:
+
+#### `client.startDiscovery()`
+Starts the discovery process.
+
+#### `client.stopDiscovery()`
+Stops the discovery process.
+
+### Client settings
+For the initialization of the client different settings can be provided. This is an example with the default options:
+
+```js
+var LifxClient = require('node-lifx').Client;
+var client = new LifxClient();
+
+// ...
+
+client.init({
+  lightOfflineTolerance: 3, // A light is offline if not seen for the given amount of discoveries
+  messageHandlerTimeout: 45000, // in ms, if not answer in time an error is provided to get methods
+  startDiscovery: true, // start discovery after initialization
+  debug: false // logs all messages in console if turned on 
+});
+```

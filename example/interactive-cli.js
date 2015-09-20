@@ -4,22 +4,32 @@ var LifxClient = require('../lib/lifx').Client;
 var client = new LifxClient();
 
 client.on('light-new', function(light) {
-  console.log('New light found: ' + light.address + ':' + light.port);
+  console.log('New light found.');
+  console.log('ID: ' + light.id);
+  console.log('IP: ' + light.address + ':' + light.port);
+  light.getState(function(err, info) {
+    if (err) {
+      console.log(err);
+    }
+    console.log('Label: ' + info.label);
+    console.log('Power:', (info.power === 1) ? 'on' : 'off');
+    console.log('Color:', info.color, '\n');
+  });
 });
 
 client.on('light-online', function(light) {
-  console.log('Light back online: ' + light.address + ':' + light.port);
+  console.log('Light back online. ID:' + light.id + ', IP:' + light.address + ':' + light.port + '\n');
 });
 
 client.on('light-offline', function(light) {
-  console.log('Light offline: ' + light.address + ':' + light.port);
+  console.log('Light offline. ID:' + light.id + ', IP:' + light.address + ':' + light.port + '\n');
 });
 
 client.on('listening', function() {
   var address = client.address();
   console.log(
     'Started LIFX listening on ' +
-    address.address + ':' + address.port
+    address.address + ':' + address.port + '\n'
   );
 });
 

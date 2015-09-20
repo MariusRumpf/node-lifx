@@ -34,22 +34,22 @@ client.on('message', function(msg, rinfo) {
 });
 
 client.on('light-new', function(light) {
-  console.log('New light found: ' + light.address + ':' + light.port);
+  console.log('New light found. ID:' + light.id + ', IP:' + light.address + ':' + light.port);
 });
 
 client.on('light-online', function(light) {
-  console.log('Light back online: ' + light.address + ':' + light.port);
+  console.log('Light back online. ID:' + light.id + ', IP:' + light.address + ':' + light.port);
 });
 
 client.on('light-offline', function(light) {
-  console.log('Light offline: ' + light.address + ':' + light.port);
+  console.log('Light offline. ID:' + light.id + ', IP:' + light.address + ':' + light.port);
 });
 
 client.on('listening', function() {
   var address = client.address();
   console.log(
     'Started LIFX listening on ' +
-    address.address + ':' + address.port
+    address.address + ':' + address.port + '\n'
   );
 });
 
