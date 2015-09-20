@@ -21,7 +21,7 @@ suite('Packet', () => {
     assert.equal(parsed.site, '');
     assert.equal(parsed.type, 2);
     assert.equal(parsed.sequence, 0);
-    assert.equal(parsed.time, 0);
+    assert.isTrue(parsed.time.equals(new Buffer('0000000000000000', 'hex')));
     assert.isTrue(parsed.reserved1.equals(new Buffer('0000', 'hex')));
     assert.isTrue(parsed.reserved2.equals(new Buffer('0000', 'hex')));
 
@@ -41,7 +41,7 @@ suite('Packet', () => {
     assert.equal(parsed.site, 'LIFXV2');
     assert.equal(parsed.sequence, 0);
     assert.equal(parsed.type, 17);
-    assert.equal(parsed.time, '1431893395075000004');
+    assert.isTrue(parsed.time.equals(new Buffer('c466acd1741bdf13', 'hex')));
     assert.isTrue(parsed.reserved1.equals(new Buffer('0000', 'hex')));
     assert.isTrue(parsed.reserved2.equals(new Buffer('0000', 'hex')));
 
@@ -61,7 +61,7 @@ suite('Packet', () => {
     assert.equal(parsed.site, 'LIFXV2');
     assert.equal(parsed.sequence, 0);
     assert.equal(parsed.type, 56);
-    assert.equal(parsed.time, '1431980150063000004');
+    assert.isTrue(parsed.time.equals(new Buffer('c469ea095c6adf13', 'hex')));
     assert.isTrue(parsed.reserved1.equals(new Buffer('0000', 'hex')));
     assert.isTrue(parsed.reserved2.equals(new Buffer('0000', 'hex')));
 
@@ -81,7 +81,7 @@ suite('Packet', () => {
     assert.equal(parsed.site, 'LIFXV2');
     assert.equal(parsed.sequence, 7);
     assert.equal(parsed.type, 51);
-    assert.equal(parsed.time, 0);
+    assert.isTrue(parsed.time.equals(new Buffer('0000000000000000', 'hex')));
     assert.isTrue(parsed.reserved1.equals(new Buffer('0000', 'hex')));
     assert.isTrue(parsed.reserved2.equals(new Buffer('0000', 'hex')));
   });
@@ -109,10 +109,10 @@ suite('Packet', () => {
       site: 'LIFXV2',
       sequence: 0,
       type: 'stateOwner',
-      time: '1431980150063000004',
+      time: new Buffer('c469ea095c6adf13', 'hex'),
       owner: '1438456c47c442a9b2603b4597221817',
       label: '',
-      updatedAt: '1421435519793000000'
+      updatedAt: '1421435519793000000' // Should not be written
     };
 
     parsed = Packet.headerToBuffer(obj);

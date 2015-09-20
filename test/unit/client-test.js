@@ -4,6 +4,7 @@ var Lifx = require('../../').Client;
 var Light = require('../../').Light;
 var packet = require('../../').packet;
 var assert = require('chai').assert;
+var sinon = require('sinon');
 
 suite('Client', () => {
   let client;
@@ -34,14 +35,34 @@ suite('Client', () => {
       address: '127.0.0.1',
       port: 57500,
       source: '12345678',
-      debug: true
+      lightOfflineTolerance: 2,
+      messageHandlerTimeout: 12000
     }, () => {
       assert.equal(client.address().address, '127.0.0.1');
       assert.equal(client.address().port, 57500);
       assert.equal(client.source, '12345678');
-      assert.isTrue(client.debug);
+      assert.equal(client.lightOfflineTolerance, 2);
+      assert.equal(client.messageHandlerTimeout, 12000);
       done();
     });
+  });
+
+  test('init parameters of wrong types throw exception', () => {
+    assert.throw(() => {
+      client.init({port: '57500'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({source: 23456789});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({lightOfflineTolerance: '3'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({messageHandlerTimeout: '30000'});
+    }, TypeError);
   });
 
   test('inits with random source by default', (done) => {
@@ -68,7 +89,7 @@ suite('Client', () => {
   });
 
   test('finding bulbs by different parameters', () => {
-    let bulbs = [];
+    const bulbs = [];
     let bulb;
 
     bulb = new Light({
@@ -151,52 +172,155 @@ suite('Client', () => {
     });
   });
 
+  test('getting all known lights', () => {
+    const bulbs = [];
+    let bulb;
+
+    bulb = new Light({
+      client: client,
+      id: '0dd124d25597',
+      address: '192.168.0.8',
+      port: 56700,
+      seenOnDiscovery: 1
+    });
+    bulbs.push(bulb);
+
+    bulb = new Light({
+      client: client,
+      id: '783rbc67cg14',
+      address: '192.168.0.9',
+      port: 56700,
+      seenOnDiscovery: 1
+    });
+    bulb.status = 'off';
+    bulbs.push(bulb);
+
+    client.devices = bulbs;
+    assert.deepEqual(client.lights(''), bulbs);
+
+    assert.deepEqual(client.lights(), [bulbs[0]]);
+    assert.deepEqual(client.lights('on'), [bulbs[0]]);
+
+    assert.deepEqual(client.lights('off'), [bulbs[1]]);
+  });
+
   suite('message handler', () => {
-    test('discovery message handler registered by default', () => {
+    beforeEach(function() {
+      this.clock = sinon.useFakeTimers();
+    });
+
+    afterEach(function() {
+      this.clock.restore();
+    });
+
+    test('discovery handler registered by default', () => {
       assert.lengthOf(client.messageHandlers, 1);
       assert.equal(client.messageHandlers[0].type, 'stateService');
     });
 
-    test('adding valid message handlers', () => {
-      let prevMsgHandlerCount = client.messageHandlers.length;
+    test('adding valid handlers', () => {
+      const prevMsgHandlerCount = client.messageHandlers.length;
       client.addMessageHandler('stateLight', () => {}, 1);
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
       assert.equal(client.messageHandlers[1].type, 'stateLight', 'correct handler type');
+      assert.equal(client.messageHandlers[1].timestamp / 1000, Date.now() / 1000, 'timestamp set to now');
     });
 
-    test('adding invalid message handlers', () => {
+    test('adding invalid handlers', () => {
       assert.throw(() => {
         client.addMessageHandler('stateLight', () => {}, '1');
       }, TypeError);
     });
 
-    test('removing one time handlers after call', (done) => {
-      let prevMsgHandlerCount = client.messageHandlers.length;
+    test('calling and removing one time handlers after call', (done) => {
+      let mustBeFalse = false;
+      const prevMsgHandlerCount = client.messageHandlers.length;
+
       client.addMessageHandler('temporaryHandler', () => {
-        done(); // Make sure callback is called
+        mustBeFalse = true; // Was falsely triggered
+      }, 2);
+      client.addMessageHandler('temporaryHandler2', () => {
+        mustBeFalse = true; // Was falsely triggered
       }, 1);
-      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
+      client.addMessageHandler('temporaryHandler', (err, msg, rinfo) => {
+        assert.isNull(err, 'no error');
+        assert.isObject(msg);
+        assert.isObject(rinfo);
+        assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 2, 'this handler has been removed');
+        assert.equal(mustBeFalse, false, 'incorrect handlers not called');
+        done();
+      }, 1);
+      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 3, 'handler has been added');
 
       // emit a fake message, rinfo is not relevant for fake
       client.processMessageHandlers({
         type: 'temporaryHandler',
-        sequenceNumber: 1
+        sequence: 1
       }, {});
-
-      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount, 'message handler has been removed');
     });
 
     test('keeping permanent handlers after call', (done) => {
-      let prevMsgHandlerCount = client.messageHandlers.length;
-      client.addMessageHandler('permanentHandler', () => {
+      const prevMsgHandlerCount = client.messageHandlers.length;
+      client.addMessageHandler('permanentHandler', (err, msg, rinfo) => {
+        assert.isNull(err, 'no error');
+        assert.isObject(msg);
+        assert.isObject(rinfo);
         done(); // Make sure callback is called
       });
-      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
+      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler has been added');
 
       // emit a fake message, rinfo is not relevant for fake
-      client.processMessageHandlers({ type: 'permanentHandler' }, {});
+      client.processMessageHandlers({type: 'permanentHandler'}, {});
 
-      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler is still present');
+      assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler is still present');
     });
+
+    test('calling and removing packets with sequenceNumber, after messageHandlerTimeout', function(done) {
+      const prevMsgHandlerCount = client.messageHandlers.length;
+      const messageHandlerTimeout = 30000; // Our timeout for the test
+
+      client.init({
+        startDiscovery: false,
+        messageHandlerTimeout: messageHandlerTimeout
+      }, () => {
+        client.addMessageHandler('temporaryHandler', (err, msg, rinfo) => {
+          assert.instanceOf(err, Error, 'error was thrown');
+          assert.isNull(msg);
+          assert.isNull(rinfo);
+          assert.lengthOf(client.messageHandlers, prevMsgHandlerCount, 'handler should be removed after timeout');
+          done();
+        }, 2);
+        assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler has been added');
+
+        // Instant
+        client.processMessageHandlers({type: 'someRandomHandler'}, {});
+        assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler should still exist after instant call');
+
+        // Short before messageHandlerTimeout
+        setTimeout(() => {
+          client.processMessageHandlers({type: 'someRandomHandler'}, {});
+          assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler should still exist before timeout');
+        }, messageHandlerTimeout - 1);
+
+        // Directly after messageHandlerTimeout
+        setTimeout(() => {
+          // This will trigger the message handler callback
+          client.processMessageHandlers({type: 'someRandomHandler'}, {});
+        }, messageHandlerTimeout + 1);
+
+        this.clock.tick(messageHandlerTimeout - 1);
+        this.clock.tick(messageHandlerTimeout + 1);
+      });
+    });
+  });
+
+  test('changing debugging mode', () => {
+    assert.equal(client.debug, false, 'debug off by default');
+
+    client.setDebug(true);
+    assert.equal(client.debug, true);
+
+    client.setDebug(false);
+    assert.equal(client.debug, false);
   });
 });

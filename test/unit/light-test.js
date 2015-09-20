@@ -7,6 +7,12 @@ var assert = require('chai').assert;
 suite('Light', () => {
   let client = null;
   let bulb = null;
+  const getMsgQueueLength = () => {
+    return client.messagesQueue.length;
+  };
+  const getMsgHandlerLength = () => {
+    return client.messageHandlers.length;
+  };
 
   beforeEach(() => {
     client = new Lifx();
@@ -29,11 +35,21 @@ suite('Light', () => {
 
   test('turning a light on', () => {
     bulb.on();
-    assert.lengthOf(client.messagesQueue, 1, 'sends a packet to the queue');
+    assert.equal(getMsgQueueLength(), 1, 'sends a packet to the queue');
   });
 
   test('turning a light off', () => {
     bulb.off();
-    assert.lengthOf(client.messagesQueue, 1, 'sends a packet to the queue');
+    assert.equal(getMsgQueueLength(), 1, 'sends a packet to the queue');
+  });
+
+  test('getting light summary', () => {
+    assert.throw(() => {
+      bulb.getState('test');
+    }, TypeError);
+
+    const currHandlerCnt = getMsgHandlerLength();
+    bulb.getState(() => {});
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
   });
 });

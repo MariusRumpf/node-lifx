@@ -3,4 +3,6 @@ language: node_js
 node_js:
   - "0.12"
   - "iojs-v1"
-  - "iojs"
+  - "iojs-v2"
+  - "iojs-v3"
+  - "4.0"
