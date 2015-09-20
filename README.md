@@ -35,7 +35,7 @@ The client starts discovery of lights right after it is initialized with the `in
 var LifxClient = require('node-lifx').Client;
 var client = new LifxClient();
 
-client.on('light-new', function (light) {
+client.on('light-new', function(light) {
   // Change light state here
 });
 
