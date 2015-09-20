@@ -37,7 +37,7 @@
     "url": "git+https://github.com/MariusRumpf/node-lifx.git"
   },
   "scripts": {
-    "lint": "eslint lib/ test/",
+    "lint": "eslint lib/ test/ example/ cli.js",
     "pretest": "npm run lint",
     "test": "mocha --growl --reporter spec --ui tdd --require babelhook --recursive test/unit/"
   }
