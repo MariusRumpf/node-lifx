@@ -6,3 +6,5 @@ node_js:
   - "iojs-v2"
   - "iojs-v3"
   - "4.0"
+after_success:
+  - npm run report-coverage
