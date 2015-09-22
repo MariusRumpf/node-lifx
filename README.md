@@ -3,8 +3,10 @@
 [![NPM Version](https://img.shields.io/npm/v/node-lifx.svg)](https://www.npmjs.com/package/node-lifx)
 [![Build Status](https://img.shields.io/travis/MariusRumpf/node-lifx/master.svg)](https://travis-ci.org/MariusRumpf/node-lifx)
 [![Build status](https://img.shields.io/appveyor/ci/MariusRumpf/node-lifx/master.svg)](https://ci.appveyor.com/project/MariusRumpf/node-lifx)
-[![Dependency Status](https://www.versioneye.com/user/projects/557212093935300021000034/badge.svg?style=flat)](https://www.versioneye.com/user/projects/557212093935300021000034)
+[![Dependency Status](https://img.shields.io/versioneye/d/nodejs/node-lifx.svg)](https://www.versioneye.com/nodejs/node-lifx/)
 [![Inline docs](http://inch-ci.org/github/mariusrumpf/node-lifx.svg?branch=master)](http://inch-ci.org/github/mariusrumpf/node-lifx)
+[![codecov.io](https://img.shields.io/codecov/c/github/MariusRumpf/node-lifx/master.svg)](http://codecov.io/github/MariusRumpf/node-lifx?branch=master)
+
 
 A Node.js implementation of the [LIFX protocol](https://github.com/LIFX/lifx-protocol-docs). Developed to work with a minimum firmware version of 2.0.
 
@@ -116,6 +118,6 @@ client.init({
   lightOfflineTolerance: 3, // A light is offline if not seen for the given amount of discoveries
   messageHandlerTimeout: 45000, // in ms, if not answer in time an error is provided to get methods
   startDiscovery: true, // start discovery after initialization
-  debug: false // logs all messages in console if turned on 
+  debug: false // logs all messages in console if turned on
 });
 ```
