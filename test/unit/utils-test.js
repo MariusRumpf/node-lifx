@@ -13,4 +13,13 @@ suite('Utils', () => {
     assert.isString(test2);
     assert.equal(test2, test2.match(/^[0-9A-F]{16}$/)[0]);
   });
+
+  test('getting host ips', () => {
+    const hostIPs = utils.getHostIPs();
+    assert.isArray(hostIPs);
+    hostIPs.forEach((ip) => {
+      assert.isString(ip, 'IPs are given as');
+      assert.isTrue(ip.indexOf('.') >= 0 || ip.indexOf(':') >= 0, 'IP format');
+    });
+  });
 });
