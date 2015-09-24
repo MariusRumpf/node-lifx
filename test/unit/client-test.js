@@ -57,11 +57,19 @@ suite('Client', () => {
     }, TypeError);
 
     assert.throw(() => {
+      client.init({source: 'Test'});
+    }, RangeError);
+
+    assert.throw(() => {
       client.init({lightOfflineTolerance: '3'});
     }, TypeError);
 
     assert.throw(() => {
       client.init({messageHandlerTimeout: '30000'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({debug: 'true'});
     }, TypeError);
   });
 
@@ -150,6 +158,9 @@ suite('Client', () => {
     result = client.light('192.168.0.1');
     assert.isFalse(result);
 
+    result = client.light('7812e9zonvwouv8754179410ufsknsuvsif724581419713947');
+    assert.isFalse(result);
+
     assert.throw(() => {
       client.light({id: '0123456789012'});
     }, TypeError);
@@ -163,8 +174,10 @@ suite('Client', () => {
     client.init({
       startDiscovery: false
     }, () => {
+      assert.equal(client.sequenceNumber, 0, 'starts sequence with 0');
       assert.lengthOf(client.messagesQueue, 0, 'is empty');
       client.send(packet.create('getService', {}, '12345678'));
+      assert.equal(client.sequenceNumber, 0, 'sequence is the same after broadcast');
       assert.lengthOf(client.messagesQueue, 1);
       assert.property(client.messagesQueue[0], 'data');
       assert.notProperty(client.messagesQueue[0], 'address');
@@ -202,6 +215,14 @@ suite('Client', () => {
     assert.deepEqual(client.lights('on'), [bulbs[0]]);
 
     assert.deepEqual(client.lights('off'), [bulbs[1]]);
+
+    assert.throw(() => {
+      client.lights(true);
+    }, TypeError);
+
+    assert.throw(() => {
+      client.lights('true');
+    }, TypeError);
   });
 
   suite('message handler', () => {
@@ -315,6 +336,10 @@ suite('Client', () => {
   });
 
   test('changing debugging mode', () => {
+    assert.throw(() => {
+      client.setDebug('true');
+    }, TypeError);
+
     assert.equal(client.debug, false, 'debug off by default');
 
     client.setDebug(true);
