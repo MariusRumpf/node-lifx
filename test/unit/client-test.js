@@ -3,6 +3,7 @@
 var Lifx = require('../../').Client;
 var Light = require('../../').Light;
 var packet = require('../../').packet;
+var constant = require('../../').constants;
 var assert = require('chai').assert;
 var sinon = require('sinon');
 
@@ -11,6 +12,13 @@ suite('Client', () => {
 
   beforeEach(() => {
     client = new Lifx();
+    client.devices['192.168.0.1'] = new Light({
+      client: client,
+      id: 'F37A4311B857',
+      address: '192.168.0.1',
+      port: constant.LIFX_DEFAULT_PORT,
+      seenOnDiscovery: 0
+    });
   });
 
   afterEach(() => {
@@ -104,7 +112,7 @@ suite('Client', () => {
       client: client,
       id: '0dd124d25597',
       address: '192.168.0.8',
-      port: 56700,
+      port: constant.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 1
     });
     bulb.status = 'off';
@@ -114,7 +122,7 @@ suite('Client', () => {
       client: client,
       id: 'ad227d95517z',
       address: '192.168.254.254',
-      port: 56700,
+      port: constant.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 1
     });
     bulbs.push(bulb);
@@ -123,7 +131,7 @@ suite('Client', () => {
       client: client,
       id: '783rbc67cg14',
       address: '192.168.1.5',
-      port: 56700,
+      port: constant.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 2
     });
     bulbs.push(bulb);
@@ -132,7 +140,7 @@ suite('Client', () => {
       client: client,
       id: '883rbd67cg15',
       address: 'FE80::903A:1C1A:E802:11E4',
-      port: 56700,
+      port: constant.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 2
     });
     bulbs.push(bulb);
@@ -178,9 +186,16 @@ suite('Client', () => {
       assert.lengthOf(client.messagesQueue, 0, 'is empty');
       client.send(packet.create('getService', {}, '12345678'));
       assert.equal(client.sequenceNumber, 0, 'sequence is the same after broadcast');
-      assert.lengthOf(client.messagesQueue, 1);
-      assert.property(client.messagesQueue[0], 'data');
-      assert.notProperty(client.messagesQueue[0], 'address');
+      assert.lengthOf(client.messagesQueue, 1, 'added to message queue');
+      assert.property(client.messagesQueue[0], 'data', 'has data');
+      assert.notProperty(client.messagesQueue[0], 'address', 'broadcast has no target address');
+
+      client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'F37A4311B857'}, '12345678'));
+      assert.equal(client.sequenceNumber, 1, 'sequence increased after specific targeting');
+
+      client.sequenceNumber = constant.PACKET_HEADER_SEQUENCE_MAX;
+      client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'F37A4311B857'}, '12345678'));
+      assert.equal(client.sequenceNumber, 0, 'sequence starts over after maximum');
       done();
     });
   });
@@ -193,7 +208,7 @@ suite('Client', () => {
       client: client,
       id: '0dd124d25597',
       address: '192.168.0.8',
-      port: 56700,
+      port: constant.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 1
     });
     bulbs.push(bulb);
@@ -202,7 +217,7 @@ suite('Client', () => {
       client: client,
       id: '783rbc67cg14',
       address: '192.168.0.9',
-      port: 56700,
+      port: constant.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 1
     });
     bulb.status = 'off';

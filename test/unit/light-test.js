@@ -21,8 +21,8 @@ suite('Light', () => {
       client: client,
       id: 'F37A4311B857',
       address: '192.168.0.1',
-      port: 56700,
-      seenOnDiscovery: 1
+      port: constant.LIFX_DEFAULT_PORT,
+      seenOnDiscovery: 0
     });
   });
 

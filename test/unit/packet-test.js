@@ -100,6 +100,28 @@ suite('Packet', () => {
     let parsed = Packet.headerToBuffer(obj);
     assert.isTrue(parsed.equals(expectedResult));
 
+    assert.throw(() => {
+      obj = {
+        size: 36,
+        tagged: true,
+        protocolVersion: 1024,
+        source: '3e80510',
+        type: 2
+      };
+      parsed = Packet.headerToBuffer(obj);
+    }, RangeError);
+
+    assert.throw(() => {
+      obj = {
+        size: 36,
+        tagged: true,
+        protocolVersion: 1024,
+        source: '3e805108',
+        type: 'unkownType'
+      };
+      parsed = Packet.headerToBuffer(obj);
+    }, Error);
+
     expectedResult = new Buffer('5c00005442524b52d073d5006d7200004c49465856320000c469ea095c6adf1338000000', 'hex');
     obj = {
       size: 92,
@@ -120,7 +142,15 @@ suite('Packet', () => {
   });
 
   test('package creation', () => {
-    var genPacket = Packet.create('getService', {}, '42524b52', 'd073d5006d72');
+    let genPacket = Packet.create('getService', {}, '42524b52', 'd073d5006d72');
+    assert.isObject(genPacket);
+    assert.equal(genPacket.type, 2);
+    assert.equal(genPacket.size, 36);
+    assert.equal(genPacket.tagged, true);
+    assert.equal(genPacket.source, '42524b52');
+    assert.equal(genPacket.target, 'd073d5006d72');
+
+    genPacket = Packet.create(2, {}, '42524b52', 'd073d5006d72');
     assert.isObject(genPacket);
     assert.equal(genPacket.type, 2);
     assert.equal(genPacket.size, 36);
