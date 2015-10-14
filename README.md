@@ -16,6 +16,10 @@ This library is not, in any way, affiliated or related to LiFi Labs, Inc.. Use i
 $ npm install node-lifx --save
 ```
 
+## Compatibility
+
+Node.js 0.12+ and io.js are tested and supported on Mac, Linux and Windows.
+
 ## Usage
 The file `cli.js` contains a working example.
 
