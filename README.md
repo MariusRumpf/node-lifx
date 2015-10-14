@@ -8,8 +8,6 @@
 
 A Node.js implementation of the [LIFX protocol](https://github.com/LIFX/lifx-protocol-docs). Developed to work with a minimum firmware version of 2.0.
 
-This library is still under development and not to be considered stable. Method names and functions may change in future releases till the first stable release.
-
 This library is not, in any way, affiliated or related to LiFi Labs, Inc.. Use it at your own risk.
 
 ## Installation
