@@ -95,7 +95,8 @@ suite('Packet', () => {
       tagged: true,
       protocolVersion: 1024,
       source: '3e805108',
-      type: 2
+      type: 2,
+      sequence: 0
     };
     let parsed = Packet.headerToBuffer(obj);
     assert.isTrue(parsed.equals(expectedResult));
