@@ -195,4 +195,31 @@ suite('Light', () => {
     assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
     currHandlerCnt += 1;
   });
+
+  test('setting the label', () => {
+    assert.throw(() => {
+      bulb.setLabel(15);
+    }, TypeError);
+
+    assert.throw(() => {
+      bulb.setLabel();
+    }, TypeError);
+
+    assert.throw(() => {
+      bulb.setLabel('');
+    }, RangeError, 'minimum of one char');
+
+    assert.throw(() => {
+      bulb.setLabel('123456789012345678901234567890123'); // 33 chars
+    }, RangeError, 'maximum of 32 bytes');
+
+    assert.throw(() => {
+      bulb.setLabel('1234567890123456789012345678901💩'); // 32 chars but one 2 byte
+    }, RangeError, 'maximum of 32 bytes');
+
+    let currHandlerCnt = getMsgQueueLength();
+    bulb.setLabel('12345678901234567890123456789012');
+    assert.equal(getMsgQueueLength(), currHandlerCnt + 1, 'sends a packet to the queue');
+    currHandlerCnt += 1;
+  });
 });
