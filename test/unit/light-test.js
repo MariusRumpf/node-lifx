@@ -196,6 +196,35 @@ suite('Light', () => {
     currHandlerCnt += 1;
   });
 
+  test('getting the label', (done) => {
+    assert.throw(() => {
+      bulb.getLabel('test');
+    }, TypeError, 'expects callback to be a function');
+
+    assert.throw(() => {
+      bulb.getLabel(() => {}, 'true');
+    }, TypeError, 'expects cache to be a boolean');
+
+    let currHandlerCnt = getMsgHandlerLength();
+    bulb.getLabel(() => {});
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
+    currHandlerCnt += 1;
+
+    bulb.getLabel(() => {}, true);
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler if no cache availible');
+    currHandlerCnt += 1;
+
+    bulb.label = 'test';
+    bulb.getLabel((err, label) => {
+      if (err) {
+        return;
+      }
+      assert.equal(label, 'test');
+      done();
+    }, true);
+    assert.equal(getMsgHandlerLength(), currHandlerCnt, 'does not add a handler if cache availible');
+  });
+
   test('setting the label', () => {
     assert.throw(() => {
       bulb.setLabel(15);

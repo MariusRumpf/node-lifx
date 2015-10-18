@@ -250,16 +250,18 @@ suite('Client', () => {
     });
 
     test('discovery handler registered by default', () => {
-      assert.lengthOf(client.messageHandlers, 1);
+      assert.lengthOf(client.messageHandlers, 3);
       assert.equal(client.messageHandlers[0].type, 'stateService');
+      assert.equal(client.messageHandlers[1].type, 'stateLabel');
+      assert.equal(client.messageHandlers[2].type, 'stateLight');
     });
 
     test('adding valid handlers', () => {
       const prevMsgHandlerCount = client.messageHandlers.length;
       client.addMessageHandler('stateLight', () => {}, 1);
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'message handler has been added');
-      assert.equal(client.messageHandlers[1].type, 'stateLight', 'correct handler type');
-      assert.equal(client.messageHandlers[1].timestamp / 1000, Date.now() / 1000, 'timestamp set to now');
+      assert.equal(client.messageHandlers[prevMsgHandlerCount].type, 'stateLight', 'correct handler type');
+      assert.equal(client.messageHandlers[prevMsgHandlerCount].timestamp / 1000, Date.now() / 1000, 'timestamp set to now');
     });
 
     test('adding invalid handlers', () => {
