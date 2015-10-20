@@ -251,4 +251,15 @@ suite('Light', () => {
     assert.equal(getMsgQueueLength(), currHandlerCnt + 1, 'sends a packet to the queue');
     currHandlerCnt += 1;
   });
+
+  test('getting ambient light', () => {
+    assert.throw(() => {
+      bulb.getAmbientLight('someValue');
+    }, TypeError);
+
+    let currHandlerCnt = getMsgHandlerLength();
+    bulb.getAmbientLight(() => {});
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
+    currHandlerCnt += 1;
+  });
 });
