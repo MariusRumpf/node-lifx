@@ -125,6 +125,7 @@ suite('Client', () => {
       port: constant.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 1
     });
+    bulb.label = 'Living room';
     bulbs.push(bulb);
 
     bulb = new Light({
@@ -134,6 +135,7 @@ suite('Client', () => {
       port: constant.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 2
     });
+    bulb.label = 'Ceiling. Upstairs.';
     bulbs.push(bulb);
 
     bulb = new Light({
@@ -143,6 +145,7 @@ suite('Client', () => {
       port: constant.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 2
     });
+    bulb.label = 'Front: 🚪Door';
     bulbs.push(bulb);
 
     client.devices = bulbs;
@@ -160,8 +163,22 @@ suite('Client', () => {
     assert.instanceOf(result, Light);
     assert.equal(result.id, 'ad227d95517z');
 
+    result = client.light('Living room');
+    assert.instanceOf(result, Light);
+    assert.equal(result.id, 'ad227d95517z');
+
+    result = client.light('Front: 🚪Door');
+    assert.instanceOf(result, Light);
+    assert.equal(result.id, '883rbd67cg15');
+
     result = client.light('141svsdvsdv1');
     assert.isFalse(result);
+
+    result = client.light('Front: Door');
+    assert.isFalse(result, 'don\'t omit utf8');
+
+    result = client.light('living room');
+    assert.isFalse(result, 'case sensitive search');
 
     result = client.light('192.168.0.1');
     assert.isFalse(result);
