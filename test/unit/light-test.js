@@ -143,11 +143,11 @@ suite('Light', () => {
 
   test('getting hardware', () => {
     assert.throw(() => {
-      bulb.getHardware('test');
+      bulb.getHardwareVersion('test');
     }, TypeError);
 
     let currHandlerCnt = getMsgHandlerLength();
-    bulb.getHardware(() => {});
+    bulb.getHardwareVersion(() => {});
     assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
     currHandlerCnt += 1;
   });
