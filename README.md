@@ -149,12 +149,15 @@ Example result:
 Sets a new label for a light. The provided new label must be a string of 32 bit maximum (which is a length of 32 with non unicode chars).
 
 
-### Target a light
+### Get a light
+#### `client.light(identifier)`
 To get a specific light the `client.light` method can be used. It expects an identifier as first parameter, this can be the lights label (case sensitive) `client.light('Kitchen')`, the ip address `client.light('192.168.2.102')` or the light id `client.light('0123456789012')`.  
 
 The light returned can then be used to call methods on it. For example `client.light('192.168.2.102').on()`.
 
-### Get all known lights
+### Get all lights
+
+#### `client.lights([filter])`
 All active lights will be returned as array when calling `client.lights()`. Each object can then be used to individually call methods on it. To get all lights call `client.lights('')` and to find all inactive lights call `client.lights('off')`.
 
 ### Client events
