@@ -10,8 +10,6 @@
 
 A Node.js implementation of the [LIFX protocol](https://github.com/LIFX/lifx-protocol-docs). Developed to work with a minimum firmware version of 2.0.
 
-This library is still under development and not to be considered stable. Method names and functions may change in future releases till the first stable release.
-
 This library is not, in any way, affiliated or related to LiFi Labs, Inc.. Use it at your own risk.
 
 ## Installation
@@ -19,6 +17,10 @@ This library is not, in any way, affiliated or related to LiFi Labs, Inc.. Use i
 ```sh
 $ npm install node-lifx --save
 ```
+
+## Compatibility
+
+Node.js 0.12+ and io.js are tested and supported on Mac, Linux and Windows.
 
 ## Usage
 The file `cli.js` contains a working example.
