@@ -71,23 +71,68 @@ Infos of the state and spec of the light can be requested with the following met
 #### `light.getState(callback)`
 Requests general info from a light, this includes color, label and power state. This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
 
+Example result:
+```js
+{
+  color: { hue: 120, saturation: 0, brightness: 100, kelvin: 8994 },
+  power: 0,
+  label: 'Kitchen'
+}
+```
+
 #### `light.getFirmwareVersion(callback)`
 Requests the firmware version from a light (minor and major version). This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
+
+Example result:
+```js
+{ majorVersion: 2, minorVersion: 1 }
+```
 
 #### `light.getHardwareVersion(callback)`
 Requests the hardware version from a light (vendor, product and version). This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
 
+Example result:
+```js
+{
+  vendorId: 1,
+  vendorName: 'LIFX',
+  productId: 1,
+  productName: 'Original 1000',
+  version: 6
+}
+```
+
 #### `light.getFirmwareInfo(callback)`
 Requests info from the micro controller unit of the light (signal, tx and rx). This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
+
+Example result:
+```js
+{ signal: 0, tx: 0, rx: 0 }
+```
 
 #### `light.getWifiInfo(callback)`
 Requests wifi info from the light (signal, tx and rx). This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
 
+Example result:
+```js
+{ signal: 0.000009999999747378752, tx: 16584, rx: 12580 }
+```
+
 #### `light.getWifiVersion(callback)`
 Requests the wifi firmware version from the light (minor and major version). This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
 
+Example result:
+```js
+{ majorVersion: 2, minorVersion: 1 }
+```
+
 #### `light.getAmbientLight(callback)`
 Requests the ambient light value in flux from the light. This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
+
+Example result:
+```js
+10
+```
 
 ### Labels
 Labels of lights can be requested and set using the following methods:
@@ -95,12 +140,17 @@ Labels of lights can be requested and set using the following methods:
 #### `light.getLabel(callback, [cache=false])`
 Requests the label of a light. This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`. The optional boolean for cache uses the last known value for the label and does not request it from the light again if `true`.
 
+Example result:
+```js
+'Kitchen'
+```
+
 #### `light.setLabel(label)`
 Sets a new label for a light. The provided new label must be a string of 32 bit maximum (which is a length of 32 with non unicode chars).
 
 
 ### Target a light
-To get a specific light the `client.light` method can be used. It expects an identifier as first parameter, this can be the lights label (case sensitive) `client.light('Kitchen lamp')`, the ip address `client.light('192.168.2.102')` or the light id `client.light('0123456789012')`.  
+To get a specific light the `client.light` method can be used. It expects an identifier as first parameter, this can be the lights label (case sensitive) `client.light('Kitchen')`, the ip address `client.light('192.168.2.102')` or the light id `client.light('0123456789012')`.  
 
 The light returned can then be used to call methods on it. For example `client.light('192.168.2.102').on()`.
 
