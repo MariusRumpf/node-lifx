@@ -21,7 +21,6 @@ client.on('message', function(msg, rinfo) {
       case 'getLocation':
       case 'stateLocation':
       case 'stateTemperature':
-      case 'statePower':
         console.log(msg, ' from ' + rinfo.address);
         break;
       default:

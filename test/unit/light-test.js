@@ -262,4 +262,15 @@ suite('Light', () => {
     assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
     currHandlerCnt += 1;
   });
+
+  test('getting power', () => {
+    assert.throw(() => {
+      bulb.getPower('someValue');
+    }, TypeError);
+
+    let currHandlerCnt = getMsgHandlerLength();
+    bulb.getPower(() => {});
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
+    currHandlerCnt += 1;
+  });
 });
