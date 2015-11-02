@@ -285,19 +285,28 @@ suite('Client', () => {
       assert.throw(() => {
         client.addMessageHandler('stateLight', () => {}, '1');
       }, TypeError);
+      assert.throw(() => {
+        client.addMessageHandler(14, () => {});
+      }, TypeError);
+      assert.throw(() => {
+        client.addMessageHandler('statePower', {});
+      }, TypeError);
+      assert.throw(() => {
+        client.addMessageHandler('unknownPacket', () => {}, 1);
+      }, RangeError);
     });
 
     test('calling and removing one time handlers after call', (done) => {
       let mustBeFalse = false;
       const prevMsgHandlerCount = client.messageHandlers.length;
 
-      client.addMessageHandler('temporaryHandler', () => {
+      client.addMessageHandler('statePower', () => { // random name
         mustBeFalse = true; // Was falsely triggered
       }, 2);
-      client.addMessageHandler('temporaryHandler2', () => {
+      client.addMessageHandler('stateLight', () => { // random name
         mustBeFalse = true; // Was falsely triggered
       }, 1);
-      client.addMessageHandler('temporaryHandler', (err, msg, rinfo) => {
+      client.addMessageHandler('statePower', (err, msg, rinfo) => { // same as first name
         assert.isNull(err, 'no error');
         assert.isObject(msg);
         assert.isObject(rinfo);
@@ -309,14 +318,14 @@ suite('Client', () => {
 
       // emit a fake message, rinfo is not relevant for fake
       client.processMessageHandlers({
-        type: 'temporaryHandler',
+        type: 'statePower',
         sequence: 1
       }, {});
     });
 
     test('keeping permanent handlers after call', (done) => {
       const prevMsgHandlerCount = client.messageHandlers.length;
-      client.addMessageHandler('permanentHandler', (err, msg, rinfo) => {
+      client.addMessageHandler('statePower', (err, msg, rinfo) => {
         assert.isNull(err, 'no error');
         assert.isObject(msg);
         assert.isObject(rinfo);
@@ -325,7 +334,7 @@ suite('Client', () => {
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler has been added');
 
       // emit a fake message, rinfo is not relevant for fake
-      client.processMessageHandlers({type: 'permanentHandler'}, {});
+      client.processMessageHandlers({type: 'statePower'}, {});
 
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler is still present');
     });
@@ -338,7 +347,7 @@ suite('Client', () => {
         startDiscovery: false,
         messageHandlerTimeout: messageHandlerTimeout
       }, () => {
-        client.addMessageHandler('temporaryHandler', (err, msg, rinfo) => {
+        client.addMessageHandler('statePower', (err, msg, rinfo) => {
           assert.instanceOf(err, Error, 'error was thrown');
           assert.isNull(msg);
           assert.isNull(rinfo);
