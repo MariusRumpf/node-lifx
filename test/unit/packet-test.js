@@ -17,7 +17,7 @@ suite('Packet', () => {
     assert.equal(parsed.source, '3e805108');
     assert.equal(parsed.target, '000000000000');
     assert.equal(parsed.ackRequired, false);
-    assert.equal(parsed.responseRequired, false);
+    assert.equal(parsed.resRequired, false);
     assert.equal(parsed.site, '');
     assert.equal(parsed.type, 2);
     assert.equal(parsed.sequence, 0);
@@ -37,7 +37,7 @@ suite('Packet', () => {
     assert.equal(parsed.source, '42524b52');
     assert.equal(parsed.target, 'd073d5006d72');
     assert.equal(parsed.ackRequired, false);
-    assert.equal(parsed.responseRequired, false);
+    assert.equal(parsed.resRequired, false);
     assert.equal(parsed.site, 'LIFXV2');
     assert.equal(parsed.sequence, 0);
     assert.equal(parsed.type, 17);
@@ -57,7 +57,7 @@ suite('Packet', () => {
     assert.equal(parsed.source, '42524b52');
     assert.equal(parsed.target, 'd073d5006d72');
     assert.equal(parsed.ackRequired, false);
-    assert.equal(parsed.responseRequired, false);
+    assert.equal(parsed.resRequired, false);
     assert.equal(parsed.site, 'LIFXV2');
     assert.equal(parsed.sequence, 0);
     assert.equal(parsed.type, 56);
@@ -77,7 +77,7 @@ suite('Packet', () => {
     assert.equal(parsed.source, '953c1b08');
     assert.equal(parsed.target, 'd073d5006d72');
     assert.equal(parsed.ackRequired, false);
-    assert.equal(parsed.responseRequired, false);
+    assert.equal(parsed.resRequired, false);
     assert.equal(parsed.site, 'LIFXV2');
     assert.equal(parsed.sequence, 7);
     assert.equal(parsed.type, 51);
