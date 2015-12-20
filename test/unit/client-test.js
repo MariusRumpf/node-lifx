@@ -48,13 +48,17 @@ suite('Client', () => {
       port: 57500,
       source: '12345678',
       lightOfflineTolerance: 2,
-      messageHandlerTimeout: 12000
+      messageHandlerTimeout: 12000,
+      resendPacketDelay: 200,
+      resendMaxTimes: 2
     }, () => {
       assert.equal(client.address().address, '127.0.0.1');
       assert.equal(client.address().port, 57500);
       assert.equal(client.source, '12345678');
       assert.equal(client.lightOfflineTolerance, 2);
       assert.equal(client.messageHandlerTimeout, 12000);
+      assert.equal(client.resendPacketDelay, 200);
+      assert.equal(client.resendMaxTimes, 2);
       done();
     });
   });
@@ -82,6 +86,14 @@ suite('Client', () => {
 
     assert.throw(() => {
       client.init({debug: 'true'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({resendPacketDelay: '200'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({resendMaxTimes: '2'});
     }, TypeError);
   });
 
