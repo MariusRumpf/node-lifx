@@ -1,22 +1,26 @@
 'use strict';
 
-var Lifx = require('../../').Client;
+var Client = require('../../').Client;
 var Light = require('../../').Light;
 var packet = require('../../').packet;
-var constant = require('../../').constants;
+var constants = require('../../').constants;
 var assert = require('chai').assert;
 var lolex = require('lolex');
 
 suite('Client', () => {
   let client;
+  let clock;
+  const getMsgQueueLength = () => {
+    return client.messagesQueue.length;
+  };
 
   beforeEach(() => {
-    client = new Lifx();
+    client = new Client();
     client.devices['192.168.0.1'] = new Light({
       client: client,
       id: 'F37A4311B857',
       address: '192.168.0.1',
-      port: constant.LIFX_DEFAULT_PORT,
+      port: constants.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 0
     });
   });
@@ -112,7 +116,7 @@ suite('Client', () => {
       client: client,
       id: '0dd124d25597',
       address: '192.168.0.8',
-      port: constant.LIFX_DEFAULT_PORT,
+      port: constants.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 1
     });
     bulb.status = 'off';
@@ -122,7 +126,7 @@ suite('Client', () => {
       client: client,
       id: 'ad227d95517z',
       address: '192.168.254.254',
-      port: constant.LIFX_DEFAULT_PORT,
+      port: constants.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 1
     });
     bulb.label = 'Living room';
@@ -132,7 +136,7 @@ suite('Client', () => {
       client: client,
       id: '783rbc67cg14',
       address: '192.168.1.5',
-      port: constant.LIFX_DEFAULT_PORT,
+      port: constants.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 2
     });
     bulb.label = 'Ceiling. Upstairs.';
@@ -142,7 +146,7 @@ suite('Client', () => {
       client: client,
       id: '883rbd67cg15',
       address: 'FE80::903A:1C1A:E802:11E4',
-      port: constant.LIFX_DEFAULT_PORT,
+      port: constants.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 2
     });
     bulb.label = 'Front: 🚪Door';
@@ -195,7 +199,7 @@ suite('Client', () => {
     }, TypeError);
   });
 
-  test('package sending', (done) => {
+  test('adding packages to the sending queue', (done) => {
     client.init({
       startDiscovery: false
     }, () => {
@@ -210,7 +214,7 @@ suite('Client', () => {
       client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'F37A4311B857'}, '12345678'));
       assert.equal(client.sequenceNumber, 1, 'sequence increased after specific targeting');
 
-      client.sequenceNumber = constant.PACKET_HEADER_SEQUENCE_MAX;
+      client.sequenceNumber = constants.PACKET_HEADER_SEQUENCE_MAX;
       client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'F37A4311B857'}, '12345678'));
       assert.equal(client.sequenceNumber, 0, 'sequence starts over after maximum');
       done();
@@ -225,7 +229,7 @@ suite('Client', () => {
       client: client,
       id: '0dd124d25597',
       address: '192.168.0.8',
-      port: constant.LIFX_DEFAULT_PORT,
+      port: constants.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 1
     });
     bulbs.push(bulb);
@@ -234,7 +238,7 @@ suite('Client', () => {
       client: client,
       id: '783rbc67cg14',
       address: '192.168.0.9',
-      port: constant.LIFX_DEFAULT_PORT,
+      port: constants.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 1
     });
     bulb.status = 'off';
@@ -257,11 +261,23 @@ suite('Client', () => {
     }, TypeError);
   });
 
-  suite('message handler', () => {
-    let clock;
+  test('changing debugging mode', () => {
+    assert.throw(() => {
+      client.setDebug('true');
+    }, TypeError);
 
+    assert.equal(client.debug, false, 'debug off by default');
+
+    client.setDebug(true);
+    assert.equal(client.debug, true);
+
+    client.setDebug(false);
+    assert.equal(client.debug, false);
+  });
+
+  suite('message handler', () => {
     beforeEach(() => {
-      clock = lolex.install();
+      clock = lolex.install(Date.now());
     });
 
     afterEach(() => {
@@ -321,7 +337,8 @@ suite('Client', () => {
       // emit a fake message, rinfo is not relevant for fake
       client.processMessageHandlers({
         type: 'statePower',
-        sequence: 1
+        sequence: 1,
+        source: client.source
       }, {});
     });
 
@@ -336,7 +353,7 @@ suite('Client', () => {
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler has been added');
 
       // emit a fake message, rinfo is not relevant for fake
-      client.processMessageHandlers({type: 'statePower'}, {});
+      client.processMessageHandlers({type: 'statePower', source: client.source}, {});
 
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler is still present');
     });
@@ -359,19 +376,19 @@ suite('Client', () => {
         assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler has been added');
 
         // Instant
-        client.processMessageHandlers({type: 'someRandomHandler'}, {});
+        client.processMessageHandlers({type: 'someRandomHandler', source: client.source}, {});
         assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler should still exist after instant call');
 
         // Short before messageHandlerTimeout
-        setTimeout(() => {
-          client.processMessageHandlers({type: 'someRandomHandler'}, {});
+        clock.setTimeout(() => {
+          client.processMessageHandlers({type: 'someRandomHandler', source: client.source}, {});
           assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler should still exist before timeout');
         }, messageHandlerTimeout - 1);
 
         // Directly after messageHandlerTimeout
-        setTimeout(() => {
+        clock.setTimeout(() => {
           // This will trigger the message handler callback after timeout
-          client.processMessageHandlers({type: 'someRandomHandler'}, {});
+          client.processMessageHandlers({type: 'someRandomHandler', source: client.source}, {});
         }, messageHandlerTimeout + 1);
 
         clock.tick(messageHandlerTimeout - 1);
@@ -380,17 +397,113 @@ suite('Client', () => {
     });
   });
 
-  test('changing debugging mode', () => {
-    assert.throw(() => {
-      client.setDebug('true');
-    }, TypeError);
+  suite('sending process', () => {
+    beforeEach(() => {
+      clock = lolex.install(Date.now());
+    });
 
-    assert.equal(client.debug, false, 'debug off by default');
+    afterEach(() => {
+      clock.uninstall();
+    });
 
-    client.setDebug(true);
-    assert.equal(client.debug, true);
+    test('with no meesages in queue', (done) => {
+      const shouldNotBeCalled = () => {
+        throw new Error();
+      };
 
-    client.setDebug(false);
-    assert.equal(client.debug, false);
+      client.init({
+        startDiscovery: false
+      }, () => {
+        client.socket.on('message', shouldNotBeCalled);
+        client.sendingProcess();
+        assert.isNull(client.sendTimer);
+        client.socket.removeListener('message', shouldNotBeCalled);
+        done();
+      });
+    });
+
+    test('with new single one way packet in queue', (done) => {
+      const packetSendCallback = (msg, rinfo) => {
+        if (msg === undefined || rinfo === undefined) {
+          throw new Error();
+        }
+        done();
+      };
+      const packetObj = packet.create('setPower', {level: 65535}, client.source);
+
+      client.init({
+        startDiscovery: false
+      }, () => {
+        client.socket.on('message', packetSendCallback);
+
+        let currMsgQueCnt = getMsgQueueLength();
+        client.send(packetObj);
+        assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
+        currMsgQueCnt += 1;
+        assert.isNotNull(client.sendTimer);
+        client.stopSendingProcess(); // We don't want automatic calling of sending
+
+        client.sendingProcess(); // Call sending it manualy
+        assert.equal(getMsgQueueLength(), currMsgQueCnt - 1, 'removes the packet when send');
+        currMsgQueCnt -= 1;
+      });
+    });
+
+    test('with a new request and response packet in queue', (done) => {
+      const packetSendCallback = (msg, rinfo) => {
+        if (msg === undefined || rinfo === undefined) {
+          throw new Error();
+        }
+        done();
+      };
+      const packetObj = packet.create('setPower', {level: 65535}, client.source);
+
+      client.init({
+        startDiscovery: false
+      }, () => {
+        client.socket.on('message', packetSendCallback);
+
+        let currMsgQueCnt = getMsgQueueLength();
+        client.send(packetObj, () => {});
+        assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
+        currMsgQueCnt += 1;
+        assert.isNotNull(client.sendTimer);
+        client.stopSendingProcess(); // We don't want automatic calling of sending
+
+        client.sendingProcess(); // Call sending it manualy
+        assert.equal(getMsgQueueLength(), currMsgQueCnt, 'keeps packet when send');
+      });
+    });
+
+    test('with a max retried request and response packet in queue', (done) => {
+      const shouldNotBeSendCallback = () => {
+        throw new Error();
+      };
+      const handlerTimeoutCallback = (err, msg, rinfo) => {
+        assert.isNotNull(err);
+        assert.isNull(msg);
+        assert.isNull(rinfo);
+        done();
+      };
+      const packetObj = packet.create('setPower', {level: 65535}, client.source);
+
+      client.init({
+        startDiscovery: false
+      }, () => {
+        client.socket.on('message', shouldNotBeSendCallback);
+
+        let currMsgQueCnt = getMsgQueueLength();
+        client.send(packetObj, handlerTimeoutCallback);
+        assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
+        currMsgQueCnt += 1;
+        assert.isNotNull(client.sendTimer);
+        client.stopSendingProcess(); // We don't want automatic calling of sending
+        client.messagesQueue[0].timesSent = client.resendMaxTimes; // This triggers error
+
+        client.sendingProcess(); // Call sending it manualy
+        assert.equal(getMsgQueueLength(), currMsgQueCnt - 1, 'removes packet after max retries and callback');
+        currMsgQueCnt -= 1;
+      });
+    });
   });
 });
