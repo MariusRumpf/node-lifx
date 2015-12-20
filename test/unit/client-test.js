@@ -5,7 +5,7 @@ var Light = require('../../').Light;
 var packet = require('../../').packet;
 var constant = require('../../').constants;
 var assert = require('chai').assert;
-var sinon = require('sinon');
+var lolex = require('lolex');
 
 suite('Client', () => {
   let client;
@@ -258,12 +258,14 @@ suite('Client', () => {
   });
 
   suite('message handler', () => {
-    beforeEach(function() {
-      this.clock = sinon.useFakeTimers();
+    let clock;
+
+    beforeEach(() => {
+      clock = lolex.install();
     });
 
-    afterEach(function() {
-      this.clock.restore();
+    afterEach(() => {
+      clock.uninstall();
     });
 
     test('discovery handler registered by default', () => {
@@ -339,7 +341,7 @@ suite('Client', () => {
       assert.lengthOf(client.messageHandlers, prevMsgHandlerCount + 1, 'handler is still present');
     });
 
-    test('calling and removing packets with sequenceNumber, after messageHandlerTimeout', function(done) {
+    test('calling and removing packets with sequenceNumber, after messageHandlerTimeout', (done) => {
       const prevMsgHandlerCount = client.messageHandlers.length;
       const messageHandlerTimeout = 30000; // Our timeout for the test
 
@@ -368,12 +370,12 @@ suite('Client', () => {
 
         // Directly after messageHandlerTimeout
         setTimeout(() => {
-          // This will trigger the message handler callback
+          // This will trigger the message handler callback after timeout
           client.processMessageHandlers({type: 'someRandomHandler'}, {});
         }, messageHandlerTimeout + 1);
 
-        this.clock.tick(messageHandlerTimeout - 1);
-        this.clock.tick(messageHandlerTimeout + 1);
+        clock.tick(messageHandlerTimeout - 1);
+        clock.tick(messageHandlerTimeout + 1);
       });
     });
   });
