@@ -6,8 +6,8 @@ var constant = require('../../').constants;
 var assert = require('chai').assert;
 
 suite('Light', () => {
-  let client = null;
-  let bulb = null;
+  let client;
+  let bulb;
   const getMsgQueueLength = () => {
     return client.messagesQueue.length;
   };
@@ -36,6 +36,7 @@ suite('Light', () => {
 
   test('turning a light on', () => {
     let currMsgQueCnt = getMsgQueueLength();
+    let currHandlerCnt = getMsgHandlerLength();
     bulb.on();
     assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
     currMsgQueCnt += 1;
@@ -48,10 +49,19 @@ suite('Light', () => {
       bulb.on('200');
     }, RangeError);
     assert.equal(getMsgQueueLength(), currMsgQueCnt, 'no package added to the queue');
+    assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
+
+    bulb.on(0, () => {});
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
+    currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
+    currHandlerCnt += 1;
   });
 
   test('turning a light off', () => {
     let currMsgQueCnt = getMsgQueueLength();
+    let currHandlerCnt = getMsgHandlerLength();
+
     bulb.off();
     assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
     currMsgQueCnt += 1;
@@ -64,10 +74,18 @@ suite('Light', () => {
       bulb.off('200');
     }, RangeError);
     assert.equal(getMsgQueueLength(), currMsgQueCnt, 'no package added to the queue');
+    assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
+
+    bulb.off(0, () => {});
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
+    currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
+    currHandlerCnt += 1;
   });
 
-  test('changeing the color of a light', () => {
+  test('changing the color of a light', () => {
     let currMsgQueCnt = getMsgQueueLength();
+    let currHandlerCnt = getMsgHandlerLength();
 
     // Error cases
     assert.throw(() => {
@@ -116,18 +134,34 @@ suite('Light', () => {
     }, RangeError);
 
     assert.throw(() => {
+      // Kelvin to high
+      bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MINIMUM_SATURATION, constant.HSBK_MAXIMUM_BRIGHTNESS, constant.HSBK_MAXIMUM_KELVIN + 1);
+    }, RangeError);
+
+    assert.throw(() => {
       // Invalid duration
-      bulb.color(constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, '100');
+      bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MAXIMUM_KELVIN, '100');
     }, RangeError);
     assert.equal(getMsgQueueLength(), currMsgQueCnt, 'no package added to the queue');
 
-    bulb.color(constant.HSBK_MAXIMUM_BRIGHTNESS, constant.HSBK_MINIMUM_SATURATION, constant.HSBK_MAXIMUM_BRIGHTNESS);
+    bulb.color(constant.HSBK_MAXIMUM_HUE, constant.HSBK_MINIMUM_SATURATION, constant.HSBK_MAXIMUM_BRIGHTNESS);
     assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
     currMsgQueCnt += 1;
 
-    bulb.color(constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, 100);
+    bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MINIMUM_KELVIN);
     assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
     currMsgQueCnt += 1;
+
+    bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MINIMUM_KELVIN, 200);
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
+    currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
+
+    bulb.color(constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MINIMUM_KELVIN, 100, () => {});
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
+    currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
+    currHandlerCnt += 1;
   });
 
   test('getting light summary', () => {
@@ -226,6 +260,8 @@ suite('Light', () => {
   });
 
   test('setting the label', () => {
+    let currMsgQueCnt = getMsgQueueLength();
+    let currHandlerCnt = getMsgHandlerLength();
     assert.throw(() => {
       bulb.setLabel(15);
     }, TypeError);
@@ -246,10 +282,16 @@ suite('Light', () => {
       bulb.setLabel('1234567890123456789012345678901💩'); // 32 chars but one 2 byte
     }, RangeError, 'maximum of 32 bytes');
 
-    let currMsgQueCnt = getMsgQueueLength();
     bulb.setLabel('12345678901234567890123456789012');
     assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
     currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
+
+    bulb.setLabel('12345678901234567890123456789012', () => {});
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
+    currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
+    currHandlerCnt += 1;
   });
 
   test('getting ambient light', () => {

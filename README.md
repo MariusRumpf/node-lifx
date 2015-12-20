@@ -50,29 +50,68 @@ client.init();
 ### Changing light state
 The states of a light can be changed with different methods:
 
-#### `light.on([duration])`  
-This turns a light on. If the `duration` (in milliseconds) is given it will be faded on over the time.
+#### `light.on([duration], [callback])`
+This turns a light on.
 
-#### `light.off([duration])`  
-This turns a light off. If the `duration` (in milliseconds) is given it will be faded off over the time.
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`duration` | int | 0 | Turning on will be faded over the time (in milliseconds).
+`callback` | function | null | `function(error) {}` Called after the command has reached the light or after `client.resendMaxTimes` with `client.resendPacketDelay` in case it has not. `error` is `null` in case of success and given if the sending has failed.
+_Note: Using callback multiplies network load for this command by two or more times._
 
-#### `light.color(hue, saturation, brightness, [kelvin], [duration])`  
-Changes the color off a light to the given value.  
-`hue` is given as number between 0 and 360. The represents the color hue in degree which changes the color.  
-`saturation` is given as number between 0 and 100, representing the color intensitity from 0% to 100%.  
-`brightness` is given as number between 0 and 100, representing the light brightness from 0% to 100%.  
-`kelvin` if given as number between 2500 and 9000, representing the color temperature. The default value is 3500 if not given.  
-`duration` if given (in milliseconds) it will fade the color to the new value over time.  
-Examples: `light.color(0, 100, 50)` is red at 50% brightness. `light.color(50, 50, 80)` is a light green at 80% brightness.
+Usage examples:
+```js
+light.on(); // Turns the light off instantly
+light.on(2000); // Fading the light off over two seconds
+```
+
+#### `light.off([duration], [callback])`
+This turns a light off.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`duration` | int | 0 | Turning off will be faded over the time (in milliseconds).
+`callback` | function | null | `function(error) {}` Called after the command has reached the light or after `client.resendMaxTimes` with `client.resendPacketDelay` in case it has not. `error` is `null` in case of success and given if the sending has failed.
+_Note: Using callback multiplies network load for this command by two or more times._
+
+Usage examples:
+```js
+light.off(); // Turns the light off instantly
+light.off(2000); // Fading the light off over two seconds
+```
+
+#### `light.color(hue, saturation, brightness, [kelvin], [duration], [callback])`
+Changes the color off a light.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`hue` | int | | Between 0 and 360, representing the color hue in degree which changes the color.
+`saturation` | int | | Between 0 and 100, representing the color intensity from 0% to 100%.
+`brightness` | int | | Between 0 and 100, representing the light brightness from 0% to 100%.
+`kelvin` | int | 3500 | Between 2500 and 9000, representing the color temperature.
+`duration` | int | 0 | Fade the color to the new value over time (in milliseconds).
+`callback` | function | null | `function(error) {}` Called after the command has reached the light or after `client.resendMaxTimes` with `client.resendPacketDelay` in case it has not. `error` is `null` in case of success and given if the sending has failed.
+_Note: Using callback multiplies network load for this command by two or more times._
+
+Usage examples:
+```js
+light.color(0, 100, 50); // Set to red at 50% brightness
+light.color(50, 50, 80, 3500, 2000); // Set to a light green at 80% brightness over next two seconds
+```
 
 ### Requesting light state and info
 Infos of the state and spec of the light can be requested with the following methods:
 
 #### `light.getState(callback)`
-Requests general info from a light, this includes color, label and power state. This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
+Requests general info from a light, this includes color, label and power state. This function is asynchronous.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`callback` | function | | `function(error, data) {}`
 
 Example result:
 ```js
+null,
 {
   color: { hue: 120, saturation: 0, brightness: 100, kelvin: 8994 },
   power: 0,
@@ -80,19 +119,45 @@ Example result:
 }
 ```
 
-#### `light.getFirmwareVersion(callback)`
-Requests the firmware version from a light (minor and major version). This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
+#### `light.getPower(callback)`
+Requests current power state (on or off). This function is asynchronous.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`callback` | function | | `function(error, data) {}`
 
 Example result:
 ```js
-{ majorVersion: 2, minorVersion: 1 }
+null,
+0 // off
+```
+
+#### `light.getFirmwareVersion(callback)`
+Requests the firmware version from a light (minor and major version). This function is asynchronous.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`callback` | function | | `function(error, data) {}`
+
+Example result:
+```js
+null,
+{
+  majorVersion: 2,
+  minorVersion: 1
+}
 ```
 
 #### `light.getHardwareVersion(callback)`
-Requests the hardware version from a light (vendor, product and version). This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
+Requests the hardware version from a light (vendor, product and version). This function is asynchronous.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`callback` | function | | `function(error, data) {}`
 
 Example result:
 ```js
+null,
 {
   vendorId: 1,
   vendorName: 'LIFX',
@@ -103,62 +168,123 @@ Example result:
 ```
 
 #### `light.getFirmwareInfo(callback)`
-Requests info from the micro controller unit of the light (signal, tx and rx). This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
+Requests info from the micro controller unit of a light (signal, tx and rx). This function is asynchronous.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`callback` | function | | `function(error, data) {}`
 
 Example result:
 ```js
-{ signal: 0, tx: 0, rx: 0 }
+null,
+{
+  signal: 0,
+  tx: 0,
+  rx: 0
+}
 ```
 
 #### `light.getWifiInfo(callback)`
-Requests wifi info from the light (signal, tx and rx). This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
+Requests wifi info from a light (signal, tx and rx). This function is asynchronous.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`callback` | function | | `function(error, data) {}`
 
 Example result:
 ```js
-{ signal: 0.000009999999747378752, tx: 16584, rx: 12580 }
+null,
+{
+  signal: 0.000009999999747378752,
+  tx: 16584,
+  rx: 12580
+}
 ```
 
 #### `light.getWifiVersion(callback)`
-Requests the wifi firmware version from the light (minor and major version). This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
+Requests the wifi firmware version from the light (minor and major version). This function is asynchronous.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`callback` | function | | `function(error, data) {}`
 
 Example result:
 ```js
-{ majorVersion: 2, minorVersion: 1 }
+null,
+{
+  majorVersion: 2,
+  minorVersion: 1
+}
 ```
 
 #### `light.getAmbientLight(callback)`
-Requests the ambient light value in flux from the light. This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`.
+Requests the ambient light value in flux from the light. This function is asynchronous.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`callback` | function | | `function(error, data) {}`
+
 
 Example result:
 ```js
+null,
 10
 ```
 
 ### Labels
 Labels of lights can be requested and set using the following methods:
 
-#### `light.getLabel(callback, [cache=false])`
-Requests the label of a light. This function is asynchronous. The callback will be provided with two parameters for error and the requested data use `function(error, data) {}`. The optional boolean for cache uses the last known value for the label and does not request it from the light again if `true`.
+#### `light.getLabel(callback, [cache])`
+Requests the label of a light. This function is asynchronous.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`callback` | function | | `function(error, data) {}`
+`cache`    | boolean  | false | Use the last known value for the label and and do not request from the light again
 
 Example result:
 ```js
+null,
 'Kitchen'
 ```
 
-#### `light.setLabel(label)`
-Sets a new label for a light. The provided new label must be a string of 32 bit maximum (which is a length of 32 with non unicode chars).
+#### `light.setLabel(label, [callback])`
+Sets a new label for a light.
 
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`label` | string | | New Label with 32 bit size maximum (which is a length of 32 with non unicode chars).
+`callback` | function | null | `function(error) {}` Called after the command has reached the light or after `client.resendMaxTimes` with `client.resendPacketDelay` in case it has not. `error` is `null` in case of success and given if the sending has failed.
+_Note: Using callback multiplies network load for this command by two or more times._
+
+
+Usage examples:
+```js
+light.setLabel('Bedroom Light');
+light.setLabel('Kitchen Light 4', function(err) {
+  if (err) { throw err; }
+  console.log('New light label has been set');
+});
+```
 
 ### Get a light
 #### `client.light(identifier)`
-To get a specific light the `client.light` method can be used. It expects an identifier as first parameter, this can be the lights label (case sensitive) `client.light('Kitchen')`, the ip address `client.light('192.168.2.102')` or the light id `client.light('0123456789012')`.  
+Find a light in the list off all lights by ip, label or id.
 
-The light returned can then be used to call methods on it. For example `client.light('192.168.2.102').on()`.
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`identifier` | string | | Light label (case sensitive) `client.light('Kitchen')`, the ip address `client.light('192.168.2.102')` or the light id `client.light('0123456789012')`
+
+Returns a light object that can then be used to call methods on it. For example `client.light('192.168.2.102').on()`.
 
 ### Get all lights
 
 #### `client.lights([filter])`
-All active lights will be returned as array when calling `client.lights()`. Each object can then be used to individually call methods on it. To get all lights call `client.lights('')` and to find all inactive lights call `client.lights('off')`.
+Get a list of all known lights
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`filter` | string | null | Filter list of lights to return only active (`null` or `'on'`), inactive (`'off'`) or all (`''`)
 
 ### Client events
 The following events might be thrown by the client.
@@ -172,7 +298,7 @@ This event is thrown when a light hasn't been discovered for a time. The light g
 `client.on('light-offline', function(light) {});`
 
 #### `light-online`
-This event is thrown when a light is discovered again after being offline.
+This event is thrown when a light is discovered again after being offline.  
 `client.on('light-online', function(light) {});`
 
 ### Start / Stop discovery

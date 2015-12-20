@@ -53,39 +53,67 @@ process.stdin.setRawMode(true);
 process.stdin.on('data', function(key) {
   if (key === '1') {
     client.lights().forEach(function(light) {
-      light.on();
+      light.on(0, function(err) {
+        if (err) {
+          console.log('Turning light ' + light.id + ' on failed');
+        }
+        console.log('Turned light ' + light.id + ' on');
+      });
     });
-    console.log('All lights turned on');
   } else if (key === '2') {
     client.lights().forEach(function(light) {
-      light.off();
+      light.off(0, function(err) {
+        if (err) {
+          console.log('Turning light ' + light.id + ' off failed');
+        }
+        console.log('Turned light ' + light.id + ' off');
+      });
     });
-    console.log('All lights turned off');
   } else if (key === '3') {
     client.lights().forEach(function(light) {
-      light.color(0, 100, 100);
+      light.color(0, 100, 100, 3500, 0, function(err) {
+        if (err) {
+          console.log('Turning light ' + light.id + ' red failed');
+        }
+        console.log('Turned light ' + light.id + ' red');
+      });
     });
-    console.log('All lights turned red');
   } else if (key === '4') {
     client.lights().forEach(function(light) {
-      light.color(120, 100, 100);
+      light.color(120, 100, 100, 3500, 0, function(err) {
+        if (err) {
+          console.log('Turning light ' + light.id + ' green failed');
+        }
+        console.log('Turned light ' + light.id + ' green');
+      });
     });
-    console.log('All lights turned green');
   } else if (key === '5') {
     client.lights().forEach(function(light) {
-      light.color(240, 100, 100);
+      light.color(240, 100, 100, 3500, 0, function(err) {
+        if (err) {
+          console.log('Turning light ' + light.id + ' blue failed');
+        }
+        console.log('Turned light ' + light.id + ' blue');
+      });
     });
-    console.log('All lights turned blue');
   } else if (key === '6') {
     client.lights().forEach(function(light) {
-      light.color(0, 0, 100, 9000);
+      light.color(0, 0, 100, 9000, 0, function(err) {
+        if (err) {
+          console.log('Turning light ' + light.id + ' bright bluish white failed');
+        }
+        console.log('Turned light ' + light.id + ' bright bluish white');
+      });
     });
-    console.log('All lights turned to bright bluish white');
   } else if (key === '7') {
     client.lights().forEach(function(light) {
-      light.color(0, 0, 100, 2500);
+      light.color(0, 0, 100, 2500, 0, function(err) {
+        if (err) {
+          console.log('Turning light ' + light.id + ' bright reddish white failed');
+        }
+        console.log('Turned light ' + light.id + ' bright reddish white');
+      });
     });
-    console.log('All lights turned to bright reddish white');
   } else if (key === '8') {
     client.setDebug(true);
     console.log('Debug messages are shown');
