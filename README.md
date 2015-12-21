@@ -4,8 +4,8 @@
 [![Build Status](https://img.shields.io/travis/MariusRumpf/node-lifx/master.svg)](https://travis-ci.org/MariusRumpf/node-lifx)
 [![Build status](https://img.shields.io/appveyor/ci/MariusRumpf/node-lifx/master.svg)](https://ci.appveyor.com/project/MariusRumpf/node-lifx)
 [![Dependency Status](https://img.shields.io/versioneye/d/nodejs/node-lifx.svg)](https://www.versioneye.com/nodejs/node-lifx/)
-[![Inline docs](http://inch-ci.org/github/mariusrumpf/node-lifx.svg?branch=master)](http://inch-ci.org/github/mariusrumpf/node-lifx)
-[![codecov.io](https://img.shields.io/codecov/c/github/MariusRumpf/node-lifx/master.svg)](http://codecov.io/github/MariusRumpf/node-lifx?branch=master)
+[![Inline docs](https://inch-ci.org/github/mariusrumpf/node-lifx.svg?branch=master)](https://inch-ci.org/github/mariusrumpf/node-lifx)
+[![codecov.io](https://img.shields.io/codecov/c/github/MariusRumpf/node-lifx/master.svg)](https://codecov.io/github/MariusRumpf/node-lifx?branch=master)
 
 
 A Node.js implementation of the [LIFX protocol](https://github.com/LIFX/lifx-protocol-docs). Developed to work with a minimum firmware version of 2.0.
