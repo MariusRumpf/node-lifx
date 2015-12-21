@@ -323,6 +323,8 @@ client.init({
   lightOfflineTolerance: 3, // A light is offline if not seen for the given amount of discoveries
   messageHandlerTimeout: 45000, // in ms, if not answer in time an error is provided to get methods
   startDiscovery: true, // start discovery after initialization
+  resendPacketDelay: 150, // delay between packages if light did not receive a packet (for setting methods with callback)
+  resendMaxTimes: 3, // resend packages x times if light did not receive a packet (for setting methods with callback)
   debug: false // logs all messages in console if turned on
 });
 ```
