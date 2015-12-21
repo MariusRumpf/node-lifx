@@ -49,6 +49,11 @@ suite('Light', () => {
       bulb.on('200');
     }, RangeError);
     assert.equal(getMsgQueueLength(), currMsgQueCnt, 'no package added to the queue');
+
+    assert.throw(() => {
+      bulb.on(200, []);
+    }, TypeError);
+    assert.equal(getMsgQueueLength(), currMsgQueCnt, 'no package added to the queue');
     assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
 
     bulb.on(0, () => {});
@@ -73,6 +78,11 @@ suite('Light', () => {
     assert.throw(() => {
       bulb.off('200');
     }, RangeError);
+    assert.equal(getMsgQueueLength(), currMsgQueCnt, 'no package added to the queue');
+
+    assert.throw(() => {
+      bulb.off(200, []);
+    }, TypeError);
     assert.equal(getMsgQueueLength(), currMsgQueCnt, 'no package added to the queue');
     assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
 
@@ -142,6 +152,11 @@ suite('Light', () => {
       // Invalid duration
       bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MAXIMUM_KELVIN, '100');
     }, RangeError);
+
+    assert.throw(() => {
+      // Invalid callback
+      bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MAXIMUM_KELVIN, 100, []);
+    }, TypeError);
     assert.equal(getMsgQueueLength(), currMsgQueCnt, 'no package added to the queue');
 
     bulb.color(constant.HSBK_MAXIMUM_HUE, constant.HSBK_MINIMUM_SATURATION, constant.HSBK_MAXIMUM_BRIGHTNESS);
@@ -271,6 +286,10 @@ suite('Light', () => {
     }, TypeError);
 
     assert.throw(() => {
+      bulb.setLabel('Test', []);
+    }, TypeError);
+
+    assert.throw(() => {
       bulb.setLabel('');
     }, RangeError, 'minimum of one char');
 
@@ -281,6 +300,7 @@ suite('Light', () => {
     assert.throw(() => {
       bulb.setLabel('1234567890123456789012345678901💩'); // 32 chars but one 2 byte
     }, RangeError, 'maximum of 32 bytes');
+    assert.equal(getMsgQueueLength(), currMsgQueCnt, 'no packet added to the queue');
 
     bulb.setLabel('12345678901234567890123456789012');
     assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');

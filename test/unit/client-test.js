@@ -13,6 +13,9 @@ suite('Client', () => {
   const getMsgQueueLength = () => {
     return client.messagesQueue.length;
   };
+  const getDeviceCount = () => {
+    return Object.keys(client.devices).length;
+  };
 
   beforeEach(() => {
     client = new Client();
@@ -118,6 +121,53 @@ suite('Client', () => {
       assert.isNull(client.discoveryTimer);
       done();
     });
+  });
+
+  test('discovery packet processing', () => {
+    const discoveryMessage = {
+      size: 41,
+      addressable: true,
+      tagged: false,
+      origin: true,
+      protocolVersion: 1024,
+      source: '0c583dd9',
+      target: 'd073d5006d72',
+      site: 'LIFXV2',
+      ackRequired: false,
+      resRequired: false,
+      sequence: 0,
+      type: 'stateService',
+      service: 'udp',
+      port: 56700
+    };
+    const discoveryInfo = {
+      address: '192.168.2.108',
+      family: 'IPv4',
+      port: 56700,
+      size: 41
+    };
+    let currDeviceCount = getDeviceCount();
+    let currMsgQueCnt = getMsgQueueLength();
+    client.processDiscoveryPacket(new Error(), null, null);
+    client.processDiscoveryPacket(null, {
+      service: 'udp',
+      port: 8080
+    }, null);
+    assert.equal(currDeviceCount, getDeviceCount(), 'malformed packages ignored');
+    assert.equal(currMsgQueCnt, getMsgQueueLength(), 'malformed packages ignored');
+
+    client.processDiscoveryPacket(null, discoveryMessage, discoveryInfo);
+    assert.equal(getDeviceCount(), currDeviceCount + 1, 'device added');
+    currDeviceCount += 1;
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'label request done');
+    currMsgQueCnt += 1;
+
+    // Set to offline for recovery check
+    client.devices[discoveryInfo.address].status = 'off';
+    client.processDiscoveryPacket(null, discoveryMessage, discoveryInfo);
+    assert.equal(client.devices[discoveryInfo.address].status, 'on');
+    assert.equal(currDeviceCount, getDeviceCount(), 'no new devices but known updated');
+    assert.equal(currMsgQueCnt, getMsgQueueLength(), 'no new messages');
   });
 
   test('finding bulbs by different parameters', () => {
