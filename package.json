@@ -1,7 +1,7 @@
 {
   "name": "node-lifx",
   "description": "Node.js implementation of the LIFX protocol",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "Marius Rumpf <marius@mariusrumpf.de>",
   "bugs": {
     "url": "https://github.com/MariusRumpf/node-lifx/issues"
