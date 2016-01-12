@@ -268,13 +268,13 @@ suite('Client', () => {
       assert.equal(client.sequenceNumber, 0, 'starts sequence with 0');
       assert.lengthOf(client.messagesQueue, 0, 'is empty');
       client.send(packet.create('getService', {}, '12345678'));
-      assert.equal(client.sequenceNumber, 0, 'sequence is the same after broadcast');
+      assert.equal(client.sequenceNumber, 1, 'sequence is the same after broadcast');
       assert.lengthOf(client.messagesQueue, 1, 'added to message queue');
       assert.property(client.messagesQueue[0], 'data', 'has data');
       assert.notProperty(client.messagesQueue[0], 'address', 'broadcast has no target address');
 
       client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'F37A4311B857'}, '12345678'));
-      assert.equal(client.sequenceNumber, 1, 'sequence increased after specific targeting');
+      assert.equal(client.sequenceNumber, 2, 'sequence increased after specific targeting');
 
       client.sequenceNumber = constants.PACKET_HEADER_SEQUENCE_MAX;
       client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'F37A4311B857'}, '12345678'));
