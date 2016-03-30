@@ -54,7 +54,8 @@ suite('Client', () => {
       messageHandlerTimeout: 12000,
       resendPacketDelay: 200,
       resendMaxTimes: 2,
-      lights: ['192.168.0.100']
+      lights: ['192.168.0.100'],
+      broadcast: '192.168.0.255'
     }, () => {
       assert.equal(client.address().address, '127.0.0.1');
       assert.equal(client.address().port, 57500);
@@ -63,6 +64,7 @@ suite('Client', () => {
       assert.equal(client.messageHandlerTimeout, 12000);
       assert.equal(client.resendPacketDelay, 200);
       assert.equal(client.resendMaxTimes, 2);
+      assert.equal(client.broadcastAddress, '192.168.0.255');
       assert.deepEqual(client.lights, ['192.168.0.100']);
       done();
     });
@@ -107,6 +109,18 @@ suite('Client', () => {
 
     assert.throw(() => {
       client.init({lights: '192.168.0.100'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({lights: ['::1']});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({broadcast: '::1'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({broadcast: ['255.255.255.255']});
     }, TypeError);
   });
 
