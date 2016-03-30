@@ -22,4 +22,21 @@ suite('Utils', () => {
       assert.isTrue(ip.indexOf('.') >= 0 || ip.indexOf(':') >= 0, 'IP format');
     });
   });
+
+  test('validation of IPv4 ips', () => {
+    assert.isTrue(utils.isIpv4Format('255.255.255.255'));
+    assert.isTrue(utils.isIpv4Format('98.139.180.149'));
+    assert.isTrue(utils.isIpv4Format('0.0.0.0'));
+    assert.isTrue(utils.isIpv4Format('127.0.0.1'));
+    assert.isTrue(utils.isIpv4Format('192.168.2.101'));
+
+    // IPv6
+    assert.isFalse(utils.isIpv4Format('FE80:0000:0000:0000:0202:B3FF:FE1E:8329'));
+    assert.isFalse(utils.isIpv4Format('::1'));
+    assert.isFalse(utils.isIpv4Format('FE80::0202:B3FF:FE1E:8329'));
+
+    // IPv4 but with port
+    assert.isFalse(utils.isIpv4Format('127.0.0.1:3000'));
+    assert.isFalse(utils.isIpv4Format('98.139.180.149:61500'));
+  });
 });
