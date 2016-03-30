@@ -325,6 +325,10 @@ client.init({
   startDiscovery: true, // start discovery after initialization
   resendPacketDelay: 150, // delay between packages if light did not receive a packet (for setting methods with callback)
   resendMaxTimes: 3, // resend packages x times if light did not receive a packet (for setting methods with callback)
-  debug: false // logs all messages in console if turned on
+  debug: false, // logs all messages in console if turned on
+  address: '0.0.0.0', // the IPv4 address to bind the udp connection to
+  broadcast: '255.255.255.255', // set's the IPv4 broadcast address which is addressed to discover bulbs
+  lights: [] // Can be used provide a list of known light IPv4 ip addresses if broadcast packets in network are not allowed
+             // For example: ['192.168.0.112', '192.168.0.114'], this will then be addressed directly
 });
 ```
