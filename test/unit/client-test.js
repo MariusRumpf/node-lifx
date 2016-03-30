@@ -65,7 +65,6 @@ suite('Client', () => {
       assert.equal(client.resendPacketDelay, 200);
       assert.equal(client.resendMaxTimes, 2);
       assert.equal(client.broadcastAddress, '192.168.0.255');
-      assert.deepEqual(client.lights, ['192.168.0.100']);
       done();
     });
   });
