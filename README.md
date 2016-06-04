@@ -61,8 +61,8 @@ _Note: Using callback multiplies network load for this command by two or more ti
 
 Usage examples:
 ```js
-light.on(); // Turns the light off instantly
-light.on(2000); // Fading the light off over two seconds
+light.on(); // Turns the light on instantly
+light.on(2000); // Fading the light on over two seconds
 ```
 
 #### `light.off([duration], [callback])`
