@@ -48,7 +48,7 @@ suite('Client', () => {
   test('accepts init parameters', (done) => {
     client.init({
       address: '127.0.0.1',
-      port: 57500,
+      port: 65535,
       source: '12345678',
       lightOfflineTolerance: 2,
       messageHandlerTimeout: 12000,
@@ -58,14 +58,13 @@ suite('Client', () => {
       broadcast: '192.168.0.255'
     }, () => {
       assert.equal(client.address().address, '127.0.0.1');
-      assert.equal(client.address().port, 57500);
+      assert.equal(client.address().port, 65535);
       assert.equal(client.source, '12345678');
       assert.equal(client.lightOfflineTolerance, 2);
       assert.equal(client.messageHandlerTimeout, 12000);
       assert.equal(client.resendPacketDelay, 200);
       assert.equal(client.resendMaxTimes, 2);
       assert.equal(client.broadcastAddress, '192.168.0.255');
-      assert.deepEqual(client.lights, ['192.168.0.100']);
       done();
     });
   });
@@ -74,6 +73,14 @@ suite('Client', () => {
     assert.throw(() => {
       client.init({port: '57500'});
     }, TypeError);
+
+    assert.throw(() => {
+      client.init({port: 0});
+    }, RangeError);
+
+    assert.throw(() => {
+      client.init({port: 65536});
+    }, RangeError);
 
     assert.throw(() => {
       client.init({source: 23456789});

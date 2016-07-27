@@ -159,4 +159,14 @@ suite('Packet', () => {
     assert.equal(genPacket.source, '42524b52');
     assert.equal(genPacket.target, 'd073d5006d72');
   });
+
+  test('package to object', () => {
+    let msg = new Buffer('240000343e80510800000000000000000000000000000000000000000000000002000000', 'hex');
+    let parsedMsg = Packet.toObject(msg);
+    assert.notInstanceOf(parsedMsg, Error);
+
+    msg = new Buffer('240000343e8051080000000000000000000000', 'hex');
+    parsedMsg = Packet.toObject(msg);
+    assert.instanceOf(parsedMsg, Error);
+  });
 });
