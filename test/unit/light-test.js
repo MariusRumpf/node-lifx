@@ -159,13 +159,16 @@ suite('Light', () => {
     }, TypeError);
     assert.equal(getMsgQueueLength(), currMsgQueCnt, 'no package added to the queue');
 
+    // Success cases
     bulb.color(constant.HSBK_MAXIMUM_HUE, constant.HSBK_MINIMUM_SATURATION, constant.HSBK_MAXIMUM_BRIGHTNESS);
     assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
     currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
 
     bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MINIMUM_KELVIN);
     assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
     currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
 
     bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MINIMUM_KELVIN, 200);
     assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
@@ -173,6 +176,44 @@ suite('Light', () => {
     assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
 
     bulb.color(constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MINIMUM_KELVIN, 100, () => {});
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
+    currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
+    currHandlerCnt += 1;
+  });
+
+  test('changing the color of a light via rgb integer values', () => {
+    let currMsgQueCnt = getMsgQueueLength();
+    let currHandlerCnt = getMsgHandlerLength();
+
+    // Error cases
+    assert.throw(() => {
+      // No arguments
+      bulb.colorRgb();
+    }, TypeError);
+
+    assert.throw(() => {
+      // Not all required arguments
+      bulb.colorRgb(0);
+    }, TypeError);
+
+    assert.throw(() => {
+      // Not all required arguments
+      bulb.colorRgb(0, 0);
+    }, TypeError);
+
+    // Success cases
+    bulb.colorRgb(constant.RGB_MINIMUM_VALUE, constant.RGB_MINIMUM_VALUE, constant.RGB_MINIMUM_VALUE);
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
+    currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
+
+    bulb.colorRgb(constant.RGB_MINIMUM_VALUE, constant.RGB_MAXIMUM_VALUE, constant.RGB_MINIMUM_VALUE, 200);
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
+    currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
+
+    bulb.colorRgb(constant.RGB_MAXIMUM_VALUE, constant.RGB_MAXIMUM_VALUE, constant.RGB_MAXIMUM_VALUE, 15, () => {});
     assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
     currMsgQueCnt += 1;
     assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');

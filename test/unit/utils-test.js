@@ -39,4 +39,66 @@ suite('Utils', () => {
     assert.isFalse(utils.isIpv4Format('127.0.0.1:3000'));
     assert.isFalse(utils.isIpv4Format('98.139.180.149:61500'));
   });
+
+  test('rgb hex string to object with decimal rgb values', () => {
+    assert.deepEqual(utils.rgbHexStringToObject('#FFF'), {r: 255, g: 255, b: 255});
+    assert.deepEqual(utils.rgbHexStringToObject('#fff'), {r: 255, g: 255, b: 255});
+    assert.deepEqual(utils.rgbHexStringToObject('#000'), {r: 0, g: 0, b: 0});
+    assert.deepEqual(utils.rgbHexStringToObject('#FFFFFF'), {r: 255, g: 255, b: 255});
+    assert.deepEqual(utils.rgbHexStringToObject('#000000'), {r: 0, g: 0, b: 0});
+    assert.deepEqual(utils.rgbHexStringToObject('#747147'), {r: 116, g: 113, b: 71});
+    assert.deepEqual(utils.rgbHexStringToObject('#d52664'), {r: 213, g: 38, b: 100});
+  });
+
+  test('maximum number in array', () => {
+    let values = [24, 1, 18, 254, 255, 21, 0];
+    assert.equal(utils.maxNumberInArray(values), 255);
+    assert.equal(values[0], 24); // Keep original order
+
+    values = [0.25, 0.325, 0.125, 0.333, 0.75, 0.999];
+    assert.equal(utils.maxNumberInArray(values), 0.999);
+    assert.equal(values[0], 0.25); // Keep original order
+  });
+
+  test('minimum number in array', () => {
+    let values = [24, 1, 18, 254, 255, 21, 0];
+    assert.equal(utils.minNumberInArray(values), 0);
+    assert.equal(values[0], 24); // Keep original order
+
+    values = [0.25, 0.325, 0.125, 0.333, 0.75, 0.999];
+    assert.equal(utils.minNumberInArray(values), 0.125);
+    assert.equal(values[0], 0.25); // Keep original order
+  });
+
+  test('rgb to hsb conversion', () => {
+    let rgbObj = {r: 255, g: 255, b: 255};
+    assert.deepEqual(utils.rgbToHsb(rgbObj), {h: 0, s: 0, b: 100});
+
+    rgbObj = {r: 0, g: 0, b: 0};
+    assert.deepEqual(utils.rgbToHsb(rgbObj), {h: 0, s: 0, b: 0});
+
+    rgbObj = {r: 255, g: 0, b: 0};
+    assert.deepEqual(utils.rgbToHsb(rgbObj), {h: 0, s: 100, b: 100});
+
+    rgbObj = {r: 0, g: 255, b: 0};
+    assert.deepEqual(utils.rgbToHsb(rgbObj), {h: 120, s: 100, b: 100});
+
+    rgbObj = {r: 0, g: 0, b: 255};
+    assert.deepEqual(utils.rgbToHsb(rgbObj), {h: 240, s: 100, b: 100});
+
+    rgbObj = {r: 128, g: 128, b: 0};
+    assert.deepEqual(utils.rgbToHsb(rgbObj), {h: 60, s: 100, b: 50});
+
+    rgbObj = {r: 128, g: 128, b: 128};
+    assert.deepEqual(utils.rgbToHsb(rgbObj), {h: 0, s: 0, b: 50});
+
+    rgbObj = {r: 218, g: 21, b: 211};
+    assert.deepEqual(utils.rgbToHsb(rgbObj), {h: 302, s: 90, b: 85});
+
+    rgbObj = {r: 83, g: 146, b: 141};
+    assert.deepEqual(utils.rgbToHsb(rgbObj), {h: 175, s: 43, b: 57});
+
+    rgbObj = {r: 146, g: 108, b: 83};
+    assert.deepEqual(utils.rgbToHsb(rgbObj), {h: 24, s: 43, b: 57});
+  });
 });
