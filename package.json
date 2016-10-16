@@ -7,7 +7,7 @@
     "url": "https://github.com/MariusRumpf/node-lifx/issues"
   },
   "dependencies": {
-    "eventemitter3": "^1.1.0",
+    "eventemitter3": "^2.0.2",
     "lodash": "^4.5.0"
   },
   "devDependencies": {
