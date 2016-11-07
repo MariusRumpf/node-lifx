@@ -335,4 +335,15 @@ suite('Light', () => {
     assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
     currHandlerCnt += 1;
   });
+
+  test('getting infrared', () => {
+    assert.throw(() => {
+      bulb.getMaxIR('someValue');
+    }, TypeError);
+
+    let currHandlerCnt = getMsgHandlerLength();
+    bulb.getMaxIR(() => {});
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
+    currHandlerCnt += 1;
+  });
 });
