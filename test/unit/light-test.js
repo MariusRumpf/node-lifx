@@ -179,6 +179,42 @@ suite('Light', () => {
     currHandlerCnt += 1;
   });
 
+  test('changing infrared maximum brightness', () => {
+    let currMsgQueCnt = getMsgQueueLength();
+    let currHandlerCnt = getMsgHandlerLength();
+
+     // Error cases
+    assert.throw(() => {
+      // No arguments
+      bulb.maxIR();
+    }, RangeError);
+
+    assert.throw(() => {
+      // Brightness too low
+      bulb.maxIR(constant.IR_MINIMUM_BRIGHTNESS - 1);
+    }, RangeError);
+
+    assert.throw(() => {
+      // Brightness too high
+      bulb.maxIR(constant.IR_MAXIMUM_BRIGHTNESS + 1);
+    }, RangeError);
+
+    assert.throw(() => {
+      // Invalid callback
+      bulb.maxIR(constant.IR_MAXIMUM_BRIGHTNESS, 'someValue');
+    }, TypeError);
+
+    bulb.maxIR(50);
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
+    currMsgQueCnt += 1;
+
+    bulb.maxIR(50, () => {});
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
+    currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
+    currHandlerCnt += 1;
+  });
+
   test('getting light summary', () => {
     assert.throw(() => {
       bulb.getState('test');
