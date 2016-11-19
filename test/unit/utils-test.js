@@ -44,6 +44,9 @@ suite('Utils', () => {
     assert.deepEqual(utils.rgbHexStringToObject('#FFF'), {r: 255, g: 255, b: 255});
     assert.deepEqual(utils.rgbHexStringToObject('#fff'), {r: 255, g: 255, b: 255});
     assert.deepEqual(utils.rgbHexStringToObject('#000'), {r: 0, g: 0, b: 0});
+    assert.deepEqual(utils.rgbHexStringToObject('#F00'), {r: 255, g: 0, b: 0});
+    assert.deepEqual(utils.rgbHexStringToObject('#f00'), {r: 255, g: 0, b: 0});
+    assert.deepEqual(utils.rgbHexStringToObject('#30d'), {r: 51, g: 0, b: 221});
     assert.deepEqual(utils.rgbHexStringToObject('#FFFFFF'), {r: 255, g: 255, b: 255});
     assert.deepEqual(utils.rgbHexStringToObject('#000000'), {r: 0, g: 0, b: 0});
     assert.deepEqual(utils.rgbHexStringToObject('#747147'), {r: 116, g: 113, b: 71});

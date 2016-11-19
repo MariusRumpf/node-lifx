@@ -220,6 +220,39 @@ suite('Light', () => {
     currHandlerCnt += 1;
   });
 
+  test('changing the color of a light via rgb hex values', () => {
+    let currMsgQueCnt = getMsgQueueLength();
+    let currHandlerCnt = getMsgHandlerLength();
+
+    // Error cases
+    assert.throw(() => {
+      // No arguments
+      bulb.colorRgbHex();
+    }, TypeError);
+
+    assert.throw(() => {
+      // Wrong argument type
+      bulb.colorRgbHex(0);
+    }, TypeError);
+
+    // Success cases
+    bulb.colorRgbHex('#F00');
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
+    currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
+
+    bulb.colorRgbHex('#FFFF00', 200);
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
+    currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt, 'no handler added');
+
+    bulb.colorRgbHex('#FFFF00', 15, () => {});
+    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'package added to the queue');
+    currMsgQueCnt += 1;
+    assert.equal(getMsgHandlerLength(), currHandlerCnt + 1, 'adds a handler');
+    currHandlerCnt += 1;
+  });
+
   test('getting light summary', () => {
     assert.throw(() => {
       bulb.getState('test');
