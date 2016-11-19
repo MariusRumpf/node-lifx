@@ -19,9 +19,9 @@ suite('Client', () => {
 
   beforeEach(() => {
     client = new Client();
-    client.devices['192.168.0.1'] = new Light({
+    client.devices.f37a4311b857 = new Light({
       client: client,
-      id: 'F37A4311B857',
+      id: 'f37a4311b857',
       address: '192.168.0.1',
       port: constants.LIFX_DEFAULT_PORT,
       seenOnDiscovery: 0
@@ -194,9 +194,9 @@ suite('Client', () => {
     currMsgQueCnt += 1;
 
     // Set to offline for recovery check
-    client.devices[discoveryInfo.address].status = 'off';
+    client.devices[discoveryMessage.target].status = 'off';
     client.processDiscoveryPacket(null, discoveryMessage, discoveryInfo);
-    assert.equal(client.devices[discoveryInfo.address].status, 'on');
+    assert.equal(client.devices[discoveryMessage.target].status, 'on');
     assert.equal(currDeviceCount, getDeviceCount(), 'no new devices but known updated');
     assert.equal(currMsgQueCnt, getMsgQueueLength(), 'no new messages');
   });
@@ -304,11 +304,11 @@ suite('Client', () => {
       assert.property(client.messagesQueue[0], 'data', 'has data');
       assert.notProperty(client.messagesQueue[0], 'address', 'broadcast has no target address');
 
-      client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'F37A4311B857'}, '12345678'));
+      client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'f37a4311b857'}, '12345678'));
       assert.equal(client.sequenceNumber, 1, 'sequence increased after specific targeting');
 
       client.sequenceNumber = constants.PACKET_HEADER_SEQUENCE_MAX;
-      client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'F37A4311B857'}, '12345678'));
+      client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'f37a4311b857'}, '12345678'));
       assert.equal(client.sequenceNumber, 0, 'sequence starts over after maximum');
       done();
     });

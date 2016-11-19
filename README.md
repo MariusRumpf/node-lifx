@@ -4,8 +4,8 @@
 [![Build Status](https://img.shields.io/travis/MariusRumpf/node-lifx/master.svg)](https://travis-ci.org/MariusRumpf/node-lifx)
 [![Build status](https://img.shields.io/appveyor/ci/MariusRumpf/node-lifx/master.svg)](https://ci.appveyor.com/project/MariusRumpf/node-lifx)
 [![Dependency Status](https://img.shields.io/versioneye/d/nodejs/node-lifx.svg)](https://www.versioneye.com/nodejs/node-lifx/)
-[![Inline docs](https://inch-ci.org/github/mariusrumpf/node-lifx.svg?branch=master)](https://inch-ci.org/github/mariusrumpf/node-lifx)
 [![codecov.io](https://img.shields.io/codecov/c/github/MariusRumpf/node-lifx/master.svg)](https://codecov.io/github/MariusRumpf/node-lifx?branch=master)
+[![Gitter Chat](https://img.shields.io/gitter/room/node-lifx/Lobby.svg)](https://gitter.im/node-lifx/Lobby)
 
 
 A Node.js implementation of the [LIFX protocol](https://github.com/LIFX/lifx-protocol-docs). Developed to work with a minimum firmware version of 2.0.
@@ -33,7 +33,7 @@ var client = new LifxClient();
 
 client.init();
 ```
-The `Client` object is an EventEmitter and emmits events whenever any changes occur. This can be a new light discovery, a light sending a message or similar.  
+The `Client` object is an EventEmitter and emmits events whenever any changes occur. This can be a new light discovery, a light sending a message or similar.
 The client starts discovery of lights right after it is initialized with the `init` method. If a new light is found the client emmits a `light-new` event. This event contains the light as an object on which methods can be called then:
 
 ```js
@@ -81,7 +81,7 @@ light.off(2000); // Fading the light off over two seconds
 ```
 
 #### `light.color(hue, saturation, brightness, [kelvin], [duration], [callback])`
-Changes the color off a light.
+Changes the color of a light to an HSB color value. This is the preferred method to change the color of a light.
 
 Option | Type | Default | Description
 ------ | ---- | ------- | -----------
@@ -97,6 +97,44 @@ Usage examples:
 ```js
 light.color(0, 100, 50); // Set to red at 50% brightness
 light.color(50, 50, 80, 3500, 2000); // Set to a light green at 80% brightness over next two seconds
+```
+
+#### `light.colorRgbHex(hexString, [duration], [callback])`
+Changes the color of a light to an RGB color value given in Hex Format. Note that RGB poorly represents color of light,
+prefer HSBK values given via the `color` method.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`hexString` | string | | A hex RGB string starting with `#`
+`duration` | int | 0 | Fade the color to the new value over time (in milliseconds).
+`callback` | function | null | `function(error) {}` Called after the command has reached the light or after `client.resendMaxTimes` with `client.resendPacketDelay` in case it has not. `error` is `null` in case of success and given if the sending has failed.
+_Note: Using callback multiplies network load for this command by two or more times._
+
+
+Usage examples:
+```js
+light.colorRgbHex('#F00'); // Set to red
+light.colorRgbHex('#FFFF00'); // Set to yellow
+```
+
+#### `light.colorRgb(red, green, blue, [duration], [callback])`
+Changes the color of a light to an RGB color value. Note that RGB poorly represents color of light,
+prefer HSBK values given via the `color` method.
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`red` | int | | Amout of red in color from 0 to 255
+`green` | int | | Amout of green in color from 0 to 255
+`blue` | int | | Amout of blue in color from 0 to 255
+`duration` | int | 0 | Fade the color to the new value over time (in milliseconds).
+`callback` | function | null | `function(error) {}` Called after the command has reached the light or after `client.resendMaxTimes` with `client.resendPacketDelay` in case it has not. `error` is `null` in case of success and given if the sending has failed.
+_Note: Using callback multiplies network load for this command by two or more times._
+
+
+Usage examples:
+```js
+light.colorRgb(255, 0, 0); // Set to red
+light.colorRgb(255, 255, 0); // Set to yellow
 ```
 
 ### Requesting light state and info
@@ -290,15 +328,15 @@ Option | Type | Default | Description
 The following events might be thrown by the client.
 
 #### `light-new`
-This event is thrown when there is a new light discovery that has not been seen at runtime before. This event is provided with the new light object.  
+This event is thrown when there is a new light discovery that has not been seen at runtime before. This event is provided with the new light object.
 `client.on('light-new', function(light) {});`
 
 #### `light-offline`
-This event is thrown when a light hasn't been discovered for a time. The light given is no longer expected to be reachable.  
+This event is thrown when a light hasn't been discovered for a time. The light given is no longer expected to be reachable.
 `client.on('light-offline', function(light) {});`
 
 #### `light-online`
-This event is thrown when a light is discovered again after being offline.  
+This event is thrown when a light is discovered again after being offline.
 `client.on('light-online', function(light) {});`
 
 ### Start / Stop discovery
