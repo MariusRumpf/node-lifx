@@ -13,7 +13,15 @@ client.on('light-new', function(light) {
     }
     console.log('Label: ' + info.label);
     console.log('Power:', (info.power === 1) ? 'on' : 'off');
-    console.log('Color:', info.color, '\n');
+    console.log('Color:', info.color);
+  });
+
+  light.getHardwareVersion(function(err, info) {
+    if (err) {
+      console.log(err);
+    }
+    console.log('Device Info: ' + info.vendorName + ' - ' + info.productName);
+    console.log('Features: ', info.productFeatures, '\n');
   });
 });
 
