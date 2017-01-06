@@ -201,7 +201,12 @@ null,
   vendorName: 'LIFX',
   productId: 1,
   productName: 'Original 1000',
-  version: 6
+  version: 6,
+  productFeatures: {
+    color: true,
+    infrared: false,
+    multizone: false
+  }
 }
 ```
 
