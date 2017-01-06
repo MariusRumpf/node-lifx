@@ -3,7 +3,7 @@
 [![NPM Version](https://img.shields.io/npm/v/node-lifx.svg)](https://www.npmjs.com/package/node-lifx)
 [![Build Status](https://img.shields.io/travis/MariusRumpf/node-lifx/master.svg)](https://travis-ci.org/MariusRumpf/node-lifx)
 [![Build status](https://img.shields.io/appveyor/ci/MariusRumpf/node-lifx/master.svg)](https://ci.appveyor.com/project/MariusRumpf/node-lifx)
-[![Dependency Status](https://img.shields.io/versioneye/d/nodejs/node-lifx.svg)](https://www.versioneye.com/nodejs/node-lifx/)
+[![Dependency Status](https://dependencyci.com/github/MariusRumpf/node-lifx/badge)](https://dependencyci.com/github/MariusRumpf/node-lifx)
 [![codecov.io](https://img.shields.io/codecov/c/github/MariusRumpf/node-lifx/master.svg)](https://codecov.io/github/MariusRumpf/node-lifx?branch=master)
 [![Gitter Chat](https://img.shields.io/gitter/room/node-lifx/Lobby.svg)](https://gitter.im/node-lifx/Lobby)
 
