@@ -104,4 +104,35 @@ suite('Utils', () => {
     rgbObj = {r: 146, g: 108, b: 83};
     assert.deepEqual(utils.rgbToHsb(rgbObj), {h: 24, s: 43, b: 57});
   });
+
+  test('get hardware info', () => {
+    const vendorId = 1;
+    let hardwareId;
+
+    hardwareId = 1;
+    assert.deepEqual(utils.getHardwareDetails(vendorId, hardwareId), {
+      vendorName: 'LIFX',
+      productName: 'Original 1000',
+      productFeatures: {
+        color: true,
+        infrared: false,
+        multizone: false
+      }
+    });
+
+    hardwareId = 10;
+    assert.deepEqual(utils.getHardwareDetails(vendorId, hardwareId), {
+      vendorName: 'LIFX',
+      productName: 'White 800 (Low Voltage)',
+      productFeatures: {
+        color: false,
+        infrared: false,
+        multizone: false
+      }
+    });
+
+    // Product and Vendor IDs start with 1
+    assert.equal(utils.getHardwareDetails(0, 1), false);
+    assert.equal(utils.getHardwareDetails(1, 0), false);
+  });
 });
