@@ -137,6 +137,36 @@ light.colorRgb(255, 0, 0); // Set to red
 light.colorRgb(255, 255, 0); // Set to yellow
 ```
 
+#### `light.maxIR(brightness, callback)`
+Set's the maximum infrared brightness of the light (only for lights that support infrared light)
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`brightness` | int | | Between 0 and 100, representing the light brightness from 0% to 100%.
+`callback` | function | | `function(error, data) {}`
+
+Usage examples:
+```js
+light.maxIR(0); // Set's a maximum infrared brightness of 0
+light.maxIR(25); // Set's a maximum infrared brightness of 25
+```
+
+#### `light.getMaxIR(callback)`
+Requests the maximum infrared brightness of the light (only for lights that support infrared light)
+
+Option | Type | Default | Description
+------ | ---- | ------- | -----------
+`callback` | function | | `function(error, data) {}`
+
+Example result:
+```js
+null,
+{
+  brightness: 25
+}
+```
+
+
 ### Requesting light state and info
 Infos of the state and spec of the light can be requested with the following methods:
 
