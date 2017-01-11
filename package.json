@@ -34,6 +34,7 @@
   ],
   "license": "MIT",
   "main": "./lib/lifx",
+  "types": "./lib/lifx.d.ts",
   "optionalDependencies": {},
   "repository": {
     "type": "git",
