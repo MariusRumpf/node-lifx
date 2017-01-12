@@ -47,7 +47,7 @@ suite('Light', () => {
 
     assert.throw(() => {
       bulb.on('200');
-    }, RangeError);
+    }, TypeError);
     assert.equal(getMsgQueueLength(), currMsgQueCnt, 'no package added to the queue');
 
     assert.throw(() => {
@@ -77,7 +77,7 @@ suite('Light', () => {
 
     assert.throw(() => {
       bulb.off('200');
-    }, RangeError);
+    }, TypeError);
     assert.equal(getMsgQueueLength(), currMsgQueCnt, 'no package added to the queue');
 
     assert.throw(() => {
@@ -101,57 +101,57 @@ suite('Light', () => {
     assert.throw(() => {
       // No arguments
       bulb.color();
-    }, RangeError);
+    }, TypeError);
 
     assert.throw(() => {
-      // To min arguments
+      // Too few arguments
       bulb.color(constant.HSBK_MINIMUM_HUE);
-    }, RangeError);
+    }, TypeError);
 
     assert.throw(() => {
-      // To min arguments
+      // Too few arguments
       bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MINIMUM_SATURATION);
-    }, RangeError);
+    }, TypeError);
 
     assert.throw(() => {
-      // Saturation to low
+      // Saturation too low
       bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MINIMUM_SATURATION - 1, constant.HSBK_MINIMUM_BRIGHTNESS);
     }, RangeError);
 
     assert.throw(() => {
-      // Saturation to high
+      // Saturation too high
       bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MAXIMUM_SATURATION + 1, constant.HSBK_MINIMUM_BRIGHTNESS);
     }, RangeError);
 
     assert.throw(() => {
-      // Hue to low
+      // Hue too low
       bulb.color(constant.HSBK_MINIMUM_HUE - 1, constant.HSBK_MINIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS);
     }, RangeError);
 
     assert.throw(() => {
-      // Hue to high
+      // Hue too high
       bulb.color(constant.HSBK_MAXIMUM_HUE + 1, constant.HSBK_MINIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS);
     }, RangeError);
 
     assert.throw(() => {
-      // Brightness to low
+      // Brightness too low
       bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MINIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS - 1);
     }, RangeError);
 
     assert.throw(() => {
-      // Brightness to high
+      // Brightness too high
       bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MINIMUM_SATURATION, constant.HSBK_MAXIMUM_BRIGHTNESS + 1);
     }, RangeError);
 
     assert.throw(() => {
-      // Kelvin to high
+      // Kelvin too high
       bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MINIMUM_SATURATION, constant.HSBK_MAXIMUM_BRIGHTNESS, constant.HSBK_MAXIMUM_KELVIN + 1);
     }, RangeError);
 
     assert.throw(() => {
       // Invalid duration
       bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MAXIMUM_KELVIN, '100');
-    }, RangeError);
+    }, TypeError);
 
     assert.throw(() => {
       // Invalid callback
@@ -257,7 +257,7 @@ suite('Light', () => {
     let currMsgQueCnt = getMsgQueueLength();
     let currHandlerCnt = getMsgHandlerLength();
 
-     // Error cases
+    // Error cases
     assert.throw(() => {
       // No arguments
       bulb.maxIR();
