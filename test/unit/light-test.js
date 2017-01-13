@@ -190,6 +190,11 @@ suite('Light', () => {
     }, RangeError);
 
     assert.throw(() => {
+      // Kelvin not a number
+      bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MINIMUM_SATURATION, constant.HSBK_MAXIMUM_BRIGHTNESS, '100');
+    }, TypeError);
+
+    assert.throw(() => {
       // Invalid duration
       bulb.color(constant.HSBK_MINIMUM_HUE, constant.HSBK_MAXIMUM_SATURATION, constant.HSBK_MINIMUM_BRIGHTNESS, constant.HSBK_MAXIMUM_KELVIN, '100');
     }, TypeError);
@@ -242,6 +247,36 @@ suite('Light', () => {
       // Not all required arguments
       bulb.colorRgb(0, 0);
     }, TypeError);
+
+    assert.throw(() => {
+      // Invalid min red value
+      bulb.colorRgb(-1, 10, 120);
+    }, RangeError);
+
+    assert.throw(() => {
+      // Invalid max red value
+      bulb.colorRgb(256, 250, 128);
+    }, RangeError);
+
+    assert.throw(() => {
+      // Invalid min green value
+      bulb.colorRgb(20, -1, 255);
+    }, RangeError);
+
+    assert.throw(() => {
+      // Invalid max green value
+      bulb.colorRgb(20, 2555, 82);
+    }, RangeError);
+
+    assert.throw(() => {
+      // Invalid min blue value
+      bulb.colorRgb(40, 123, -20);
+    }, RangeError);
+
+    assert.throw(() => {
+      // Invalid max blue value
+      bulb.colorRgb(95, 0, 2255);
+    }, RangeError);
 
     // Success cases
     bulb.colorRgb(constant.RGB_MINIMUM_VALUE, constant.RGB_MINIMUM_VALUE, constant.RGB_MINIMUM_VALUE);
