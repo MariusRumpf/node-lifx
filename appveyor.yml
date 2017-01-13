@@ -1,30 +1,28 @@
 # AppVeyor file
 # http://www.appveyor.com/docs/appveyor-yml
-
-version: "{build}"
-
 environment:
   matrix:
-    - nodejs_version: "0.12"
-    - nodejs_version: "1"
-    - nodejs_version: "2"
-    - nodejs_version: "3"
-    - nodejs_version: "4"
-    - nodejs_version: "5"
-    - nodejs_version: "6"
+    - nodejs_version: '6'
+    - nodejs_version: '4'
 
 install:
   - ps: Install-Product node $env:nodejs_version
+  - set CI=true
+  - set AVA_APPVEYOR=true
+  - git config core.symlinks true
+  - git reset --hard
+  - npm install --global npm
+  - set PATH=%APPDATA%\npm;%PATH%
   - npm install
-
-test_script:
-  - node --version && npm --version
-  - npm test
-
-build: off
-
+  - npm prune
 matrix:
   fast_finish: true
-
+build: off
+clone_depth: 1
 cache:
-  - '%AppData%\npm-cache -> package.json' # npm cache
+  - node_modules
+  - '%APPDATA%\npm-cache'
+test_script:
+  - node --version
+  - npm --version
+  - npm test
