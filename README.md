@@ -20,7 +20,8 @@ $ npm install node-lifx --save
 
 ## Compatibility
 
-Node.js 0.12+ and io.js are tested and supported on Mac, Linux and Windows.
+Node LTS and current versions are tested and supported on Mac, Linux and Windows.
+Older versions may work but are not supported or tested.
 
 ## Usage
 The file `cli.js` contains a working example.

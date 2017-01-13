@@ -9,7 +9,15 @@
     "valid-jsdoc": [2, {
         "requireReturn": false,
         "prefer": {
-            "returns": "return"
+            "returns": "return",
+            "argument": "param",
+            "arg": "param"
+        },
+        "preferType": {
+          "boolean": "Boolean",
+          "number": "Number",
+          "object": "Object",
+          "string": "String"
         }
     }],
     "comma-dangle": [2, "never"],
@@ -139,6 +147,6 @@
     "space-in-parens": [2, "never"],
     "space-infix-ops": 2,
     "space-unary-ops": 2,
-    "spaced-comment": [2, "always"],
+    "spaced-comment": [2, "always"]
   }
 }
