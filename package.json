@@ -7,18 +7,18 @@
     "url": "https://github.com/MariusRumpf/node-lifx/issues"
   },
   "dependencies": {
-    "eventemitter3": "^2.0.2",
-    "lodash": "^4.5.0"
+    "eventemitter3": "^2.0.3",
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
-    "babel-core": "^6.0.15",
-    "babel-preset-es2015": "^6.0.15",
-    "chai": "^3.0.0",
+    "babel-core": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "chai": "^4.0.0",
     "codecov.io": "^0.1.6",
-    "eslint": "^3.13.1",
+    "eslint": "^3.19.0",
     "istanbul": "^0.4.0",
-    "lolex": "^1.4.0",
-    "mocha": "^3.2.0"
+    "lolex": "^1.6.0",
+    "mocha": "^3.4.2"
   },
   "directories": {
     "test": "test",
