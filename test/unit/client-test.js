@@ -55,7 +55,8 @@ suite('Client', () => {
       resendPacketDelay: 200,
       resendMaxTimes: 2,
       lights: ['192.168.0.100'],
-      broadcast: '192.168.0.255'
+      broadcast: '192.168.0.255',
+      sendPort: 65534
     }, () => {
       assert.equal(client.address().address, '127.0.0.1');
       assert.equal(client.address().port, 65535);
@@ -65,6 +66,7 @@ suite('Client', () => {
       assert.equal(client.resendPacketDelay, 200);
       assert.equal(client.resendMaxTimes, 2);
       assert.equal(client.broadcastAddress, '192.168.0.255');
+      assert.equal(client.sendPort, 65534);
       done();
     });
   });
@@ -129,6 +131,18 @@ suite('Client', () => {
     assert.throw(() => {
       client.init({broadcast: ['255.255.255.255']});
     }, TypeError);
+
+    assert.throw(() => {
+      client.init({sendPort: '57500'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({sendPort: 0});
+    }, RangeError);
+
+    assert.throw(() => {
+      client.init({sendPort: 65536});
+    }, RangeError);
   });
 
   test('inits with random source by default', (done) => {
