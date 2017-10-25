@@ -55,7 +55,8 @@ suite('Client', () => {
       resendPacketDelay: 200,
       resendMaxTimes: 2,
       lights: ['192.168.0.100'],
-      broadcast: '192.168.0.255'
+      broadcast: '192.168.0.255',
+      sendPort: 65534
     }, () => {
       assert.equal(client.address().address, '127.0.0.1');
       assert.equal(client.address().port, 65535);
@@ -65,6 +66,7 @@ suite('Client', () => {
       assert.equal(client.resendPacketDelay, 200);
       assert.equal(client.resendMaxTimes, 2);
       assert.equal(client.broadcastAddress, '192.168.0.255');
+      assert.equal(client.sendPort, 65534);
       done();
     });
   });
@@ -75,7 +77,7 @@ suite('Client', () => {
     }, TypeError);
 
     assert.throw(() => {
-      client.init({port: 0});
+      client.init({port: -1});
     }, RangeError);
 
     assert.throw(() => {
@@ -129,6 +131,32 @@ suite('Client', () => {
     assert.throw(() => {
       client.init({broadcast: ['255.255.255.255']});
     }, TypeError);
+
+    assert.throw(() => {
+      client.init({sendPort: '57500'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({sendPort: 0});
+    }, RangeError);
+
+    assert.throw(() => {
+      client.init({sendPort: 65536});
+    }, RangeError);
+  });
+
+  test('inits with random bind port by default', (done) => {
+    client.init({
+      startDiscovery: false
+    }, () => {
+      assert.equal(client.address().address, '0.0.0.0');
+      assert.notEqual(client.address().port, constants.LIFX_DEFAULT_PORT);
+      assert.isAtLeast(client.address().port, 1024);
+      assert.isAtMost(client.address().port, 65535);
+      assert.equal(client.port, 0);
+      assert.equal(client.sendPort, constants.LIFX_DEFAULT_PORT);
+      done();
+    });
   });
 
   test('inits with random source by default', (done) => {
@@ -525,6 +553,7 @@ suite('Client', () => {
       const packetObj = packet.create('setPower', {level: 65535}, client.source);
 
       client.init({
+        port: constants.LIFX_DEFAULT_PORT,
         startDiscovery: false
       }, () => {
         client.socket.on('message', packetSendCallback);
@@ -552,6 +581,7 @@ suite('Client', () => {
       const packetObj = packet.create('setPower', {level: 65535}, client.source);
 
       client.init({
+        port: constants.LIFX_DEFAULT_PORT,
         startDiscovery: false
       }, () => {
         client.socket.on('message', packetSendCallback);
