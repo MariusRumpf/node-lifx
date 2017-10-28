@@ -5,9 +5,7 @@ const dgram = require('dgram');
 const EventEmitter = require('eventemitter3');
 const _ = require('lodash');
 const Packet = require('../lifx').packet;
-const Light = require('../lifx').Light;
-const constants = require('../lifx').constants;
-const utils = require('../lifx').utils;
+const {Light, constants, utils} = require('../lifx');
 
 /**
  * Creates a lifx client

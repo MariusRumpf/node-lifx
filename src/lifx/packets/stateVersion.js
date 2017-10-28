@@ -1,7 +1,7 @@
 'use strict';
 
-const _ = require('lodash');
-const constants = require('../../lifx').constants;
+const {find} = require('lodash');
+const {constants} = require('../../lifx');
 
 const Packet = {
   size: 12
@@ -22,7 +22,7 @@ Packet.toObject = function(buf) {
   }
 
   obj.vendorId = buf.readUInt32LE(offset);
-  const vendor = _.find(constants.LIFX_VENDOR_IDS, {id: obj.vendorId});
+  const vendor = find(constants.LIFX_VENDOR_IDS, {id: obj.vendorId});
   if (vendor !== undefined) {
     obj.vendorName = vendor.name;
   }

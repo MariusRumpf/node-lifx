@@ -1,9 +1,6 @@
 'use strict';
 
-const packet = require('../lifx').packet;
-const constants = require('../lifx').constants;
-const validate = require('../lifx').validate;
-const utils = require('../lifx').utils;
+const {packet, constants, validate, utils} = require('../lifx');
 const _ = require('lodash');
 
 /**

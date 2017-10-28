@@ -1,7 +1,7 @@
 'use strict';
 
 const os = require('os');
-const constants = require('../lifx').constants;
+const {constants} = require('../lifx');
 const productDetailList = require('./products.json');
 const utils = exports;
 

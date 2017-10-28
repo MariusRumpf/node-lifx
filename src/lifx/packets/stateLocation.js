@@ -1,6 +1,6 @@
 'use strict';
 
-const utils = require('../../lifx').utils;
+const {utils} = require('../../lifx');
 
 const Packet = {
   size: 56

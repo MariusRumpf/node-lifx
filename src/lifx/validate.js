@@ -1,7 +1,7 @@
 'use strict';
 
-const constants = require('../lifx').constants;
-const format = require('util').format;
+const {constants} = require('../lifx');
+const {format} = require('util');
 const validate = exports;
 
 /**
