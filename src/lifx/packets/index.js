@@ -1,4 +1,4 @@
-var packets = exports;
+const packets = exports;
 
 /*
  * Device related packages

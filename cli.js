@@ -1,7 +1,7 @@
 'use strict';
 
-var Lifx = require('./lib/lifx').Client;
-var client = new Lifx();
+const Lifx = require('./lib/lifx').Client;
+const client = new Lifx();
 
 client.on('error', function(err) {
   console.log('LIFX error:\n' + err.stack);
@@ -45,7 +45,7 @@ client.on('light-offline', function(light) {
 });
 
 client.on('listening', function() {
-  var address = client.address();
+  const address = client.address();
   console.log(
     'Started LIFX listening on ' +
     address.address + ':' + address.port + '\n'

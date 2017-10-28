@@ -1,4 +1,4 @@
-var lifx = exports;
+const lifx = exports;
 
 // Export constants
 lifx.constants = require('./lifx/constants');

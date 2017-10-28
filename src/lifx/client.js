@@ -1,13 +1,13 @@
 'use strict';
 
-var util = require('util');
-var dgram = require('dgram');
-var EventEmitter = require('eventemitter3');
-var _ = require('lodash');
-var Packet = require('../lifx').packet;
-var Light = require('../lifx').Light;
-var constants = require('../lifx').constants;
-var utils = require('../lifx').utils;
+const util = require('util');
+const dgram = require('dgram');
+const EventEmitter = require('eventemitter3');
+const _ = require('lodash');
+const Packet = require('../lifx').packet;
+const Light = require('../lifx').Light;
+const constants = require('../lifx').constants;
+const utils = require('../lifx').utils;
 
 /**
  * Creates a lifx client
@@ -65,7 +65,7 @@ util.inherits(Client, EventEmitter);
  * @param {Function} [callback] Called after initialation
  */
 Client.prototype.init = function(options, callback) {
-  var defaults = {
+  const defaults = {
     address: '0.0.0.0',
     port: 0,
     debug: false,
@@ -81,7 +81,7 @@ Client.prototype.init = function(options, callback) {
   };
 
   options = options || {};
-  var opts = _.defaults(options, defaults);
+  const opts = _.defaults(options, defaults);
 
   if (typeof opts.port !== 'number') {
     throw new TypeError('LIFX Client port option must be a number');
@@ -170,7 +170,7 @@ Client.prototype.init = function(options, callback) {
     }
 
     // Parse packet to object
-    var parsedMsg = Packet.toObject(msg);
+    const parsedMsg = Packet.toObject(msg);
 
     // Check if packet is read successfully
     if (parsedMsg instanceof Error) {
@@ -179,7 +179,7 @@ Client.prototype.init = function(options, callback) {
       console.trace(parsedMsg);
     } else {
       // Convert type before emitting
-      var messageTypeName = _.result(_.find(Packet.typeList, {id: parsedMsg.type}), 'name');
+      const messageTypeName = _.result(_.find(Packet.typeList, {id: parsedMsg.type}), 'name');
       if (messageTypeName !== undefined) {
         parsedMsg.type = messageTypeName;
       }
@@ -229,7 +229,7 @@ Client.prototype.sendingProcess = function() {
   }
 
   if (this.messagesQueue.length > 0) {
-    var msg = this.messagesQueue.pop();
+    const msg = this.messagesQueue.pop();
     if (msg.address === undefined) {
       msg.address = this.broadcastAddress;
     }
@@ -259,7 +259,7 @@ Client.prototype.sendingProcess = function() {
         this.messageHandlers.forEach(function(handler, hdlrIndex) {
           if (handler.type === 'acknowledgement' && handler.sequenceNumber === msg.sequence) {
             this.messageHandlers.splice(hdlrIndex, 1);
-            var err = new Error('No LIFX response after max resend limit of ' + this.resendMaxTimes);
+            const err = new Error('No LIFX response after max resend limit of ' + this.resendMaxTimes);
             return handler.callback(err, null, null);
           }
         }.bind(this));
@@ -297,11 +297,11 @@ Client.prototype.stopSendingProcess = function() {
  */
 Client.prototype.startDiscovery = function(lights) {
   lights = lights || [];
-  var sendDiscoveryPacket = function() {
+  const sendDiscoveryPacket = function() {
     // Sign flag on inactive lights
     _.forEach(this.devices, _.bind(function(info, deviceId) {
       if (this.devices[deviceId].status !== 'off') {
-        var diff = this.discoveryPacketSequence - info.seenOnDiscovery;
+        const diff = this.discoveryPacketSequence - info.seenOnDiscovery;
         if (diff >= this.lightOfflineTolerance) {
           this.devices[deviceId].status = 'off';
           this.emit('bulb-offline', info); // deprecated
@@ -315,7 +315,7 @@ Client.prototype.startDiscovery = function(lights) {
 
     // Send a discovery packet to each light given directly
     lights.forEach(function(lightAddress) {
-      var msg = Packet.create('getService', {}, this.source);
+      const msg = Packet.create('getService', {}, this.source);
       msg.address = lightAddress;
       this.send(msg);
     }, this);
@@ -375,7 +375,7 @@ Client.prototype.processMessageHandlers = function(msg, rinfo) {
       if (Date.now() > (handler.timestamp + this.messageHandlerTimeout)) {
         this.messageHandlers.splice(hdlrIndex, 1);
 
-        var err = new Error('No LIFX response in time');
+        const err = new Error('No LIFX response in time');
         return handler.callback(err, null, null);
       }
     }
@@ -395,7 +395,7 @@ Client.prototype.processDiscoveryPacket = function(err, msg, rinfo) {
   if (msg.service === 'udp' && msg.port === constants.LIFX_DEFAULT_PORT) {
     // Add / update the found gateway
     if (!this.devices[msg.target]) {
-      var lightDevice = new Light({
+      const lightDevice = new Light({
         client: this,
         id: msg.target,
         address: rinfo.address,
@@ -405,7 +405,7 @@ Client.prototype.processDiscoveryPacket = function(err, msg, rinfo) {
       this.devices[msg.target] = lightDevice;
 
       // Request label
-      var labelRequest = Packet.create('getLabel', {}, this.source);
+      const labelRequest = Packet.create('getLabel', {}, this.source);
       labelRequest.target = msg.target;
       this.send(labelRequest);
 
@@ -453,7 +453,7 @@ Client.prototype.stopDiscovery = function() {
  * @return {Number} The sequence number of the request
  */
 Client.prototype.send = function(msg, callback) {
-  var packet = {
+  const packet = {
     timeCreated: Date.now(),
     timeLastSent: 0,
     timesSent: 0,
@@ -465,7 +465,7 @@ Client.prototype.send = function(msg, callback) {
     packet.address = msg.address;
   }
   if (msg.target !== undefined) {
-    var targetBulb = this.light(msg.target);
+    const targetBulb = this.light(msg.target);
     if (targetBulb) {
       packet.address = targetBulb.address;
       // If we would exceed the max value for the int8 field start over again
@@ -496,7 +496,7 @@ Client.prototype.send = function(msg, callback) {
  * @return {Object} Network address data
  */
 Client.prototype.address = function() {
-  var address = null;
+  let address = null;
   try {
     address = this.socket.address();
   } catch (e) {}
@@ -532,12 +532,12 @@ Client.prototype.addMessageHandler = function(type, callback, sequenceNumber) {
     throw new TypeError('LIFX Client addMessageHandler expects callback parameter to be a function');
   }
 
-  var typeName = _.find(Packet.typeList, {name: type});
+  const typeName = _.find(Packet.typeList, {name: type});
   if (typeName === undefined) {
     throw new RangeError('LIFX Client addMessageHandler unknown packet type: ' + type);
   }
 
-  var handler = {
+  const handler = {
     type: type,
     callback: callback.bind(this),
     timestamp: Date.now()
@@ -572,7 +572,7 @@ Client.prototype.lights = function(status) {
       throw new TypeError('Lifx Client lights expects status to be \'on\', \'off\' or \'\'');
     }
 
-    var result = [];
+    const result = [];
     _.forEach(this.devices, function(light) {
       if (light.status === status) {
         result.push(light);
@@ -590,7 +590,7 @@ Client.prototype.lights = function(status) {
  * @return {Object|Boolean} the light object or false if not found
  */
 Client.prototype.light = function(identifier) {
-  var result;
+  let result;
   if (typeof identifier !== 'string') {
     throw new TypeError('LIFX Client light expects identifier for LIFX light to be a string');
   }

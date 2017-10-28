@@ -1,6 +1,6 @@
 'use strict';
 
-var Packet = {
+const Packet = {
   size: 2
 };
 
@@ -12,9 +12,9 @@ var Packet = {
  * @return {Buffer} packet
  */
 Packet.toBuffer = function(obj) {
-  var buf = new Buffer(this.size);
+  const buf = new Buffer(this.size);
   buf.fill(0);
-  var offset = 0;
+  let offset = 0;
 
   if (typeof obj.startIndex !== 'number' && obj.startIndex < 0 || obj.startIndex > 255) {
     throw new RangeError('Invalid startIndex value given for setColorZones LIFX packet, must be a number between 0 and 255');

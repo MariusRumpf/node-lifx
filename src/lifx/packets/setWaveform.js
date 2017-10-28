@@ -1,8 +1,8 @@
 'use strict';
 
-var constants = require('../../lifx').constants;
+const constants = require('../../lifx').constants;
 
-var Packet = {
+const Packet = {
   size: 21
 };
 
@@ -12,8 +12,8 @@ var Packet = {
  * @return {Object}     Information contained in packet
  */
 Packet.toObject = function(buf) {
-  var obj = {};
-  var offset = 0;
+  const obj = {};
+  let offset = 0;
 
   if (buf.length !== this.size) {
     throw new Error('Invalid length given for setWaveform LIFX packet');
@@ -66,9 +66,9 @@ Packet.toObject = function(buf) {
  * @return {Buffer}  packet
  */
 Packet.toBuffer = function(obj) {
-  var buf = new Buffer(this.size);
+  const buf = new Buffer(this.size);
   buf.fill(0);
-  var offset = 0;
+  let offset = 0;
 
   // obj.stream field has unknown function so leave it as 0
   offset += 1;

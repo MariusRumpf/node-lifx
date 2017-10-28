@@ -1,17 +1,17 @@
 'use strict';
 
-var os = require('os');
-var constants = require('../lifx').constants;
-var productDetailList = require('./products.json');
-var utils = exports;
+const os = require('os');
+const constants = require('../lifx').constants;
+const productDetailList = require('./products.json');
+const utils = exports;
 
 /**
  * Return all ip addresses of the machine
  * @return {Array} list containing ip address info
  */
 utils.getHostIPs = function() {
-  var ips = [];
-  var ifaces = os.networkInterfaces();
+  const ips = [];
+  const ifaces = os.networkInterfaces();
   Object.keys(ifaces).forEach(function(ifname) {
     ifaces[ifname].forEach(function(iface) {
       ips.push(iface.address);
@@ -32,15 +32,15 @@ utils.getHostIPs = function() {
  * @return {String}            random hex string
  */
 utils.getRandomHexString = function(length) {
-  var string = '';
-  var chars = '0123456789ABCDEF';
+  let string = '';
+  const chars = '0123456789ABCDEF';
 
   if (!length) {
     length = 8;
   }
 
-  for (var i = 0; i < length; i++) {
-    var randomNumber = Math.floor(Math.random() * chars.length);
+  for (let i = 0; i < length; i++) {
+    const randomNumber = Math.floor(Math.random() * chars.length);
     string += chars.substring(randomNumber, randomNumber + 1);
   }
 
@@ -78,7 +78,7 @@ utils.writeUInt64LE = function(buffer, offset, input) {
  * @return {Boolean}   is IPv4 format?
  */
 utils.isIpv4Format = function(ip) {
-  var ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
+  const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
   return ipv4Regex.test(ip);
 };
 
@@ -92,18 +92,18 @@ utils.rgbHexStringToObject = function(rgbHexString) {
   if (typeof rgbHexString !== 'string') {
     throw new TypeError('LIFX util rgbHexStringToObject expects first parameter to be a string');
   }
-  var hashChar = rgbHexString.substr(0, 1);
+  const hashChar = rgbHexString.substr(0, 1);
   if (hashChar !== '#') {
     throw new RangeError('LIFX util rgbHexStringToObject expects hex parameter with leading \'#\' sign');
   }
-  var pureHex = rgbHexString.substr(1);
+  const pureHex = rgbHexString.substr(1);
   if (pureHex.length !== 6 && pureHex.length !== 3) {
     throw new RangeError('LIFX util rgbHexStringToObject expects hex value parameter to be 3 or 6 chars long');
   }
 
-  var r;
-  var g;
-  var b;
+  let r;
+  let g;
+  let b;
 
   if (pureHex.length === 6) {
     r = pureHex.substring(0, 2);
@@ -126,7 +126,7 @@ utils.rgbHexStringToObject = function(rgbHexString) {
 };
 
 utils.minNumberInArray = function(array) {
-  var sortedCopy = array.slice();
+  const sortedCopy = array.slice();
   sortedCopy.sort(function(a, b) {
     return a - b;
   });
@@ -134,7 +134,7 @@ utils.minNumberInArray = function(array) {
 };
 
 utils.maxNumberInArray = function(array) {
-  var sortedCopy = array.slice();
+  const sortedCopy = array.slice();
   sortedCopy.sort(function(a, b) {
     return a - b;
   });
@@ -148,18 +148,18 @@ utils.maxNumberInArray = function(array) {
  * @return {Object} hsbObj object with h,s,b keys and converted values
  */
 utils.rgbToHsb = function(rgbObj) {
-  var red = rgbObj.r / constants.RGB_MAXIMUM_VALUE;
-  var green = rgbObj.g / constants.RGB_MAXIMUM_VALUE;
-  var blue = rgbObj.b / constants.RGB_MAXIMUM_VALUE;
-  var rgb = [red, green, blue];
-  var hsb = {};
+  const red = rgbObj.r / constants.RGB_MAXIMUM_VALUE;
+  const green = rgbObj.g / constants.RGB_MAXIMUM_VALUE;
+  const blue = rgbObj.b / constants.RGB_MAXIMUM_VALUE;
+  const rgb = [red, green, blue];
+  const hsb = {};
 
-  var max = utils.maxNumberInArray(rgb);
-  var min = utils.minNumberInArray(rgb);
-  var c = max - min;
+  const max = utils.maxNumberInArray(rgb);
+  const min = utils.minNumberInArray(rgb);
+  const c = max - min;
 
   // https://en.wikipedia.org/wiki/HSL_and_HSV#Hue_and_chroma
-  var hue;
+  let hue;
   if (c === 0) {
     hue = 0;
   } else if (max === red) {
@@ -175,11 +175,11 @@ utils.rgbToHsb = function(rgbObj) {
   hsb.h = Math.round(60 * hue);
 
   // https://en.wikipedia.org/wiki/HSL_and_HSV#Lightness
-  var lightness = max;
+  const lightness = max;
   hsb.b = Math.round(lightness * 100);
 
   // https://en.wikipedia.org/wiki/HSL_and_HSV#Saturation
-  var saturation;
+  let saturation;
   if (c === 0) {
     saturation = 0;
   } else {
@@ -198,9 +198,9 @@ utils.rgbToHsb = function(rgbObj) {
  * @return {Object|Boolean} product and details vendor details or false if not found
  */
 utils.getHardwareDetails = function(vendorId, productId) {
-  for (var i = 0; i < productDetailList.length; i += 1) {
+  for (let i = 0; i < productDetailList.length; i += 1) {
     if (productDetailList[i].vid === vendorId) {
-      for (var j = 0; j < productDetailList[i].products.length; j += 1) {
+      for (let j = 0; j < productDetailList[i].products.length; j += 1) {
         if (productDetailList[i].products[j].pid === productId) {
           return {
             vendorName: productDetailList[i].name,

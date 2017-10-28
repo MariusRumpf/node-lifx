@@ -1,9 +1,9 @@
 'use strict';
 
-var constants = require('../lifx').constants;
-var packets = require('./packets');
-var utils = require('../lifx').utils;
-var _ = require('lodash');
+const constants = require('../lifx').constants;
+const packets = require('./packets');
+const utils = require('../lifx').utils;
+const _ = require('lodash');
 
 /*
   Package headers 36 bit in total consisting of
@@ -21,7 +21,7 @@ var _ = require('lodash');
   type - 2 bit
   00 00
  */
-var Packet = {};
+const Packet = {};
 
 /**
  * Mapping for types
@@ -94,14 +94,14 @@ Packet.typeList = [
  * @return {Object} parsed packet header
  */
 Packet.headerToObject = function(buf) {
-  var obj = {};
-  var offset = 0;
+  const obj = {};
+  let offset = 0;
 
   // Frame
   obj.size = buf.readUInt16LE(offset);
   offset += 2;
 
-  var frameDescription = buf.readUInt16LE(offset);
+  const frameDescription = buf.readUInt16LE(offset);
   obj.addressable = (frameDescription & constants.ADDRESSABLE_BIT) !== 0;
   obj.tagged = (frameDescription & constants.TAGGED_BIT) !== 0;
   obj.origin = ((frameDescription & constants.ORIGIN_BITS) >> 14) !== 0;
@@ -122,7 +122,7 @@ Packet.headerToObject = function(buf) {
   obj.site = obj.site.replace(/\0/g, '');
   offset += 6;
 
-  var frameAddressDescription = buf.readUInt8(offset);
+  const frameAddressDescription = buf.readUInt8(offset);
   obj.ackRequired = (frameAddressDescription & constants.ACK_REQUIRED_BIT) !== 0;
   obj.resRequired = (frameAddressDescription & constants.RESPONSE_REQUIRED_BIT) !== 0;
   offset += 1;
@@ -149,7 +149,7 @@ Packet.headerToObject = function(buf) {
  * @return {Object} parsed packet
  */
 Packet.toObject = function(buf) {
-  var obj = {};
+  let obj = {};
 
   // Try to read header of packet
   try {
@@ -160,10 +160,10 @@ Packet.toObject = function(buf) {
   }
 
   if (obj.type !== undefined) {
-    var typeName = _.result(_.find(this.typeList, {id: obj.type}), 'name');
+    const typeName = _.result(_.find(this.typeList, {id: obj.type}), 'name');
     if (packets[typeName] !== undefined) {
       if (typeof packets[typeName].toObject === 'function') {
-        var specificObj = packets[typeName].toObject(buf.slice(constants.PACKET_HEADER_SIZE));
+        const specificObj = packets[typeName].toObject(buf.slice(constants.PACKET_HEADER_SIZE));
         obj = _.extend(obj, specificObj);
       }
     }
@@ -178,9 +178,9 @@ Packet.toObject = function(buf) {
  * @return {Buffer} packet header buffer
  */
 Packet.headerToBuffer = function(obj) {
-  var buf = new Buffer(36);
+  const buf = new Buffer(36);
   buf.fill(0);
-  var offset = 0;
+  let offset = 0;
 
   // Frame
   buf.writeUInt16LE(obj.size, offset);
@@ -189,7 +189,7 @@ Packet.headerToBuffer = function(obj) {
   if (obj.protocolVersion === undefined) {
     obj.protocolVersion = constants.PROTOCOL_VERSION_CURRENT;
   }
-  var frameDescription = obj.protocolVersion;
+  let frameDescription = obj.protocolVersion;
 
   if (obj.addressable !== undefined && obj.addressable === true) {
     frameDescription |= constants.ADDRESSABLE_BIT;
@@ -232,7 +232,7 @@ Packet.headerToBuffer = function(obj) {
   }
   offset += 6;
 
-  var frameAddressDescription = 0;
+  let frameAddressDescription = 0;
   if (obj.ackRequired !== undefined && obj.ackRequired === true) {
     frameAddressDescription |= constants.ACK_REQUIRED_BIT;
   }
@@ -287,7 +287,7 @@ Packet.toBuffer = function(obj) {
 
     if (obj.type !== undefined) {
       if (typeof packets[obj.type].toBuffer === 'function') {
-        var packetTypeData = packets[obj.type].toBuffer(obj);
+        const packetTypeData = packets[obj.type].toBuffer(obj);
         return Buffer.concat([
           this.headerToBuffer(obj),
           packetTypeData
@@ -310,13 +310,13 @@ Packet.toBuffer = function(obj) {
  * @return {Object} The prepared packet object including header
  */
 Packet.create = function(type, params, source, target) {
-  var obj = {};
+  const obj = {};
   if (type !== undefined) {
     // Check if type is valid
     if (typeof type === 'string' || type instanceof String) {
       obj.type = _.result(_.find(this.typeList, {name: type}), 'id');
     } else if (typeof type === 'number') {
-      var typeMatch = _.find(this.typeList, {id: type});
+      const typeMatch = _.find(this.typeList, {id: type});
       obj.type = _.result(typeMatch, 'id');
       type = _.result(typeMatch, 'name');
     }

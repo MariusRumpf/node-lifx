@@ -1,6 +1,6 @@
 'use strict';
 
-var Packet = {
+const Packet = {
   size: 0
 };
 

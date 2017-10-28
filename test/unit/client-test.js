@@ -1,11 +1,11 @@
 'use strict';
 
-var Client = require('../../').Client;
-var Light = require('../../').Light;
-var packet = require('../../').packet;
-var constants = require('../../').constants;
-var assert = require('chai').assert;
-var lolex = require('lolex');
+const Client = require('../../').Client;
+const Light = require('../../').Light;
+const packet = require('../../').packet;
+const constants = require('../../').constants;
+const assert = require('chai').assert;
+const lolex = require('lolex');
 
 suite('Client', () => {
   let client;

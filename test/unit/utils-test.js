@@ -1,7 +1,7 @@
 'use strict';
 
-var utils = require('../../').utils;
-var assert = require('chai').assert;
+const utils = require('../../').utils;
+const assert = require('chai').assert;
 
 suite('Utils', () => {
   test('create a random hex string', () => {

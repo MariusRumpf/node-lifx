@@ -1,7 +1,7 @@
 'use strict';
 
-var Packet = require('../../../').packet;
-var assert = require('chai').assert;
+const Packet = require('../../../').packet;
+const assert = require('chai').assert;
 
 suite('Packet setColor', () => {
   suite('create', () => {
@@ -38,7 +38,7 @@ suite('Packet setColor', () => {
 
     test('invalid colors', () => {
       assert.throw(() => {
-        var obj = Packet.create('setColor', {
+        const obj = Packet.create('setColor', {
           hue: 0,
           saturation: 0,
           brightness: 0,
@@ -48,7 +48,7 @@ suite('Packet setColor', () => {
       }, RangeError);
 
       assert.throw(() => {
-        var obj = Packet.create('setColor', {
+        const obj = Packet.create('setColor', {
           hue: 0,
           saturation: 0,
           brightness: 65536,
@@ -58,7 +58,7 @@ suite('Packet setColor', () => {
       }, RangeError);
 
       assert.throw(() => {
-        var obj = Packet.create('setColor', {
+        const obj = Packet.create('setColor', {
           hue: 0,
           saturation: 65536,
           brightness: 0,
@@ -68,7 +68,7 @@ suite('Packet setColor', () => {
       }, RangeError);
 
       assert.throw(() => {
-        var obj = Packet.create('setColor', {
+        const obj = Packet.create('setColor', {
           hue: 65536,
           saturation: 0,
           brightness: 0,

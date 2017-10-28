@@ -1,8 +1,8 @@
 'use strict';
 
-var constants = require('../lifx').constants;
-var format = require('util').format;
-var validate = exports;
+const constants = require('../lifx').constants;
+const format = require('util').format;
+const validate = exports;
 
 /**
  * Checks validity of given color hue, saturation and brightness values
@@ -12,14 +12,14 @@ var validate = exports;
  * @param {String} context validation context
  */
 validate.colorHsb = function(hue, saturation, brightness, context) {
-  var hueMessage = 'LIFX %s expects hue to be a number between ' + constants.HSBK_MINIMUM_HUE + ' and ' + constants.HSBK_MAXIMUM_HUE;
+  const hueMessage = 'LIFX %s expects hue to be a number between ' + constants.HSBK_MINIMUM_HUE + ' and ' + constants.HSBK_MAXIMUM_HUE;
   if (typeof hue !== 'number') {
     throwTypeError(hueMessage, context);
   } else if (hue < constants.HSBK_MINIMUM_HUE || hue > constants.HSBK_MAXIMUM_HUE) {
     throwRangeError(hueMessage, context);
   }
 
-  var saturationMessage = 'LIFX %s expects saturation to be a number between ' + constants.HSBK_MINIMUM_SATURATION + ' and ' +
+  const saturationMessage = 'LIFX %s expects saturation to be a number between ' + constants.HSBK_MINIMUM_SATURATION + ' and ' +
     constants.HSBK_MAXIMUM_SATURATION;
   if (typeof saturation !== 'number') {
     throwTypeError(saturationMessage, context);
@@ -27,7 +27,7 @@ validate.colorHsb = function(hue, saturation, brightness, context) {
     throwRangeError(saturationMessage, context);
   }
 
-  var brightnessMessage = 'LIFX %s expects brightness to be a number between ' + constants.HSBK_MINIMUM_BRIGHTNESS + ' and ' +
+  const brightnessMessage = 'LIFX %s expects brightness to be a number between ' + constants.HSBK_MINIMUM_BRIGHTNESS + ' and ' +
     constants.HSBK_MAXIMUM_BRIGHTNESS;
   if (typeof brightness !== 'number') {
     throwTypeError(brightnessMessage, context);
@@ -82,7 +82,7 @@ validate.irBrightness = function(brightness, context) {
  * @param {String} context validation context
  */
 validate.optionalKelvin = function(kelvin, context) {
-  var message = 'LIFX %s expects kelvin to be a number between 2500 and 9000';
+  const message = 'LIFX %s expects kelvin to be a number between 2500 and 9000';
   if (kelvin !== undefined) {
     if (typeof kelvin !== 'number') {
       throwTypeError(message, context);
@@ -143,7 +143,7 @@ validate.optionalBoolean = function(value, parameter, context) {
  * @param {String} context validation context
  */
 validate.zoneIndex = function(index, context) {
-  var zoneMessage = 'LIFX %s expects zone to be a number between ' +
+  const zoneMessage = 'LIFX %s expects zone to be a number between ' +
     constants.ZONE_INDEX_MINIMUM_VALUE + ' and ' + constants.ZONE_INDEX_MAXIMUM_VALUE;
   if (typeof index !== 'number') {
     throwTypeError(zoneMessage, context);
@@ -158,7 +158,7 @@ validate.zoneIndex = function(index, context) {
  * @param {String} context validation context
  */
 validate.optionalZoneIndex = function(index, context) {
-  var zoneMessage = 'LIFX %s expects zone to be a number between ' +
+  const zoneMessage = 'LIFX %s expects zone to be a number between ' +
     constants.ZONE_INDEX_MINIMUM_VALUE + ' and ' + constants.ZONE_INDEX_MAXIMUM_VALUE;
   if (index !== undefined) {
     if (typeof index !== 'number') {

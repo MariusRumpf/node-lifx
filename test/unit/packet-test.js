@@ -1,7 +1,7 @@
 'use strict';
 
-var Packet = require('../../').packet;
-var assert = require('chai').assert;
+const Packet = require('../../').packet;
+const assert = require('chai').assert;
 
 suite('Packet', () => {
   test('header to object', () => {

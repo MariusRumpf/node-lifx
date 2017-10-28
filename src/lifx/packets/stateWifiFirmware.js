@@ -1,8 +1,8 @@
 'use strict';
 
-var utils = require('../../lifx').utils;
+const utils = require('../../lifx').utils;
 
-var Packet = {
+const Packet = {
   size: 20
 };
 
@@ -12,8 +12,8 @@ var Packet = {
  * @return {Object}     Information contained in packet
  */
 Packet.toObject = function(buf) {
-  var obj = {};
-  var offset = 0;
+  const obj = {};
+  let offset = 0;
 
   // Check length
   if (buf.length !== this.size) {
@@ -26,7 +26,7 @@ Packet.toObject = function(buf) {
   obj.install = utils.readUInt64LE(buf, offset);
   offset += 8;
 
-  var version = buf.readUInt32LE(offset);
+  const version = buf.readUInt32LE(offset);
   obj.majorVersion = (version >> 16) & 0xFF;
   obj.minorVersion = version & 0xFF;
   offset += 4;
@@ -40,9 +40,9 @@ Packet.toObject = function(buf) {
  * @return {Buffer}     packet
  */
 Packet.toBuffer = function(obj) {
-  var buf = new Buffer(this.size);
+  const buf = new Buffer(this.size);
   buf.fill(0);
-  var offset = 0;
+  let offset = 0;
 
   utils.writeUInt64LE(buf, offset, obj.build);
   offset += 8;

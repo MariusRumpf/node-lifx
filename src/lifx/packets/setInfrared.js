@@ -1,6 +1,6 @@
 'use strict';
 
-var Packet = {
+const Packet = {
   size: 2
 };
 
@@ -10,8 +10,8 @@ var Packet = {
  * @return {Object}     Information contained in packet
  */
 Packet.toObject = function(buf) {
-  var obj = {};
-  var offset = 0;
+  const obj = {};
+  let offset = 0;
 
   if (buf.length !== this.size) {
     throw new Error('Invalid length given for setInfrared LIFX packet');
@@ -30,9 +30,9 @@ Packet.toObject = function(buf) {
  * @return {Buffer} packet
  */
 Packet.toBuffer = function(obj) {
-  var buf = new Buffer(this.size);
+  const buf = new Buffer(this.size);
   buf.fill(0);
-  var offset = 0;
+  let offset = 0;
 
   if (typeof obj.brightness !== 'number' && obj.brightness < 0 && obj.brightness > 65535) {
     throw new RangeError('Invalid brightness given for setInfrared LIFX packet, must be a number between 0 and 65535');

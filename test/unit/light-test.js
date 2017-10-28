@@ -1,9 +1,9 @@
 'use strict';
 
-var Lifx = require('../../').Client;
-var Light = require('../../').Light;
-var constant = require('../../').constants;
-var assert = require('chai').assert;
+const Lifx = require('../../').Client;
+const Light = require('../../').Light;
+const constant = require('../../').constants;
+const assert = require('chai').assert;
 
 suite('Light', () => {
   let client;

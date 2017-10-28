@@ -5,13 +5,13 @@
  * which tells the light to pulse to red and back three times over a period of 800ms
  */
 
-var LifxClient = require('../lib/lifx').Client;
-var packet = require('../lib/lifx').packet;
-var constants = require('../lib/lifx').constants;
-var client = new LifxClient();
+const LifxClient = require('../lib/lifx').Client;
+const packet = require('../lib/lifx').packet;
+const constants = require('../lib/lifx').constants;
+const client = new LifxClient();
 
 // Create our packet with for pulsing red color effect
-var packetObj = packet.create('setWaveform', {
+const packetObj = packet.create('setWaveform', {
   isTransient: true,
   color: {hue: 0, saturation: 65535, brightness: 65535, kelvin: 3500},
   period: 800,
@@ -21,7 +21,7 @@ var packetObj = packet.create('setWaveform', {
 }, client.source);
 
 // Function running when packet was received by light
-var callback = function() {
+const callback = function() {
   console.log('Packet send\n');
 };
 
@@ -36,7 +36,7 @@ client.on('light-new', function(light) {
 
 // Give feedback when running
 client.on('listening', function() {
-  var address = client.address();
+  const address = client.address();
   console.log(
     'Started LIFX listening on ' +
     address.address + ':' + address.port + '\n'

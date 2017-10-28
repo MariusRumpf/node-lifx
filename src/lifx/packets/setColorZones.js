@@ -1,8 +1,8 @@
 'use strict';
 
-var constants = require('../../lifx').constants;
+const constants = require('../../lifx').constants;
 
-var Packet = {
+const Packet = {
   size: 15
 };
 
@@ -12,8 +12,8 @@ var Packet = {
  * @return {Object}     Information contained in packet
  */
 Packet.toObject = function(buf) {
-  var obj = {};
-  var offset = 0;
+  const obj = {};
+  let offset = 0;
 
   if (buf.length !== this.size) {
     throw new Error('Invalid length given for setColorZones LIFX packet');
@@ -59,9 +59,9 @@ Packet.toObject = function(buf) {
  * @return {Buffer} packet
  */
 Packet.toBuffer = function(obj) {
-  var buf = new Buffer(this.size);
+  const buf = new Buffer(this.size);
   buf.fill(0);
-  var offset = 0;
+  let offset = 0;
 
   if (typeof obj.startIndex !== 'number' && obj.startIndex < 0 || obj.startIndex > 255) {
     throw new RangeError('Invalid startIndex value given for setColorZones LIFX packet, must be a number between 0 and 255');

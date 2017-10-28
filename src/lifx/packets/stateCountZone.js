@@ -1,8 +1,8 @@
 'use strict';
 
-var utils = require('../../lifx').utils;
+const utils = require('../../lifx').utils;
 
-var Packet = {
+const Packet = {
   size: 9
 };
 
@@ -12,8 +12,8 @@ var Packet = {
  * @return {Object}     Information contained in packet
  */
 Packet.toObject = function(buf) {
-  var obj = {};
-  var offset = 0;
+  const obj = {};
+  let offset = 0;
 
   // Check length
   if (buf.length !== this.size) {

@@ -1,6 +1,6 @@
 'use strict';
 
-var Packet = {
+const Packet = {
   size: 64
 };
 
@@ -10,8 +10,8 @@ var Packet = {
  * @return {Object}     Information contained in packet
  */
 Packet.toObject = function(buf) {
-  var obj = {};
-  var offset = 0;
+  const obj = {};
+  let offset = 0;
 
   // Check length
   if (buf.length !== this.size) {
@@ -31,9 +31,9 @@ Packet.toObject = function(buf) {
  * @return {Buffer}     packet
  */
 Packet.toBuffer = function(obj) {
-  var buf = new Buffer(this.size);
+  const buf = new Buffer(this.size);
   buf.fill(0);
-  var offset = 0;
+  let offset = 0;
 
   buf.write(obj.payload, offset, 64);
   offset += 64;

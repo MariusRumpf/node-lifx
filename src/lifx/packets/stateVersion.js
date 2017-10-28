@@ -1,9 +1,9 @@
 'use strict';
 
-var _ = require('lodash');
-var constants = require('../../lifx').constants;
+const _ = require('lodash');
+const constants = require('../../lifx').constants;
 
-var Packet = {
+const Packet = {
   size: 12
 };
 
@@ -13,8 +13,8 @@ var Packet = {
  * @return {Object}     Information contained in packet
  */
 Packet.toObject = function(buf) {
-  var obj = {};
-  var offset = 0;
+  const obj = {};
+  let offset = 0;
 
   // Check length
   if (buf.length !== this.size) {
@@ -22,7 +22,7 @@ Packet.toObject = function(buf) {
   }
 
   obj.vendorId = buf.readUInt32LE(offset);
-  var vendor = _.find(constants.LIFX_VENDOR_IDS, {id: obj.vendorId});
+  const vendor = _.find(constants.LIFX_VENDOR_IDS, {id: obj.vendorId});
   if (vendor !== undefined) {
     obj.vendorName = vendor.name;
   }
@@ -43,9 +43,9 @@ Packet.toObject = function(buf) {
  * @return {Buffer}     packet
  */
 Packet.toBuffer = function(obj) {
-  var buf = new Buffer(this.size);
+  const buf = new Buffer(this.size);
   buf.fill(0);
-  var offset = 0;
+  let offset = 0;
 
   buf.writeUInt32LE(obj.vendor, offset);
   offset += 4;

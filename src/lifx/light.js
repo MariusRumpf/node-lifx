@@ -1,10 +1,10 @@
 'use strict';
 
-var packet = require('../lifx').packet;
-var constants = require('../lifx').constants;
-var validate = require('../lifx').validate;
-var utils = require('../lifx').utils;
-var _ = require('lodash');
+const packet = require('../lifx').packet;
+const constants = require('../lifx').constants;
+const validate = require('../lifx').validate;
+const utils = require('../lifx').utils;
+const _ = require('lodash');
 
 /**
  * A representation of a light bulb
@@ -37,7 +37,7 @@ Light.prototype.off = function(duration, callback) {
   validate.optionalDuration(duration, 'light off method');
   validate.optionalCallback(callback, 'light off method');
 
-  var packetObj = packet.create('setPower', {level: 0, duration: duration}, this.client.source);
+  const packetObj = packet.create('setPower', {level: 0, duration: duration}, this.client.source);
   packetObj.target = this.id;
   this.client.send(packetObj, callback);
 };
@@ -52,7 +52,7 @@ Light.prototype.on = function(duration, callback) {
   validate.optionalDuration(duration, 'light on method');
   validate.optionalCallback(callback, 'light on method');
 
-  var packetObj = packet.create('setPower', {level: 65535, duration: duration}, this.client.source);
+  const packetObj = packet.create('setPower', {level: 65535, duration: duration}, this.client.source);
   packetObj.target = this.id;
   this.client.send(packetObj, callback);
 };
@@ -78,7 +78,7 @@ Light.prototype.color = function(hue, saturation, brightness, kelvin, duration, 
   saturation = Math.round(saturation / constants.HSBK_MAXIMUM_SATURATION * 65535);
   brightness = Math.round(brightness / constants.HSBK_MAXIMUM_BRIGHTNESS * 65535);
 
-  var packetObj = packet.create('setColor', {
+  const packetObj = packet.create('setColor', {
     hue: hue,
     saturation: saturation,
     brightness: brightness,
@@ -104,7 +104,7 @@ Light.prototype.colorRgb = function(red, green, blue, duration, callback) {
   validate.optionalDuration(duration, 'light colorRgb method');
   validate.optionalCallback(callback, 'light colorRgb method');
 
-  var hsbObj = utils.rgbToHsb({r: red, g: green, b: blue});
+  const hsbObj = utils.rgbToHsb({r: red, g: green, b: blue});
   this.color(hsbObj.h, hsbObj.s, hsbObj.b, 3500, duration, callback);
 };
 
@@ -124,8 +124,8 @@ Light.prototype.colorRgbHex = function(hexString, duration, callback) {
   validate.optionalDuration(duration, 'light colorRgbHex method');
   validate.optionalCallback(callback, 'light colorRgbHex method');
 
-  var rgbObj = utils.rgbHexStringToObject(hexString);
-  var hsbObj = utils.rgbToHsb(rgbObj);
+  const rgbObj = utils.rgbHexStringToObject(hexString);
+  const hsbObj = utils.rgbToHsb(rgbObj);
   this.color(hsbObj.h, hsbObj.s, hsbObj.b, 3500, duration, callback);
 };
 
@@ -143,7 +143,7 @@ Light.prototype.maxIR = function(brightness, callback) {
     throw new TypeError('LIFX light setMaxIR method expects callback to be a function');
   }
 
-  var packetObj = packet.create('setInfrared', {
+  const packetObj = packet.create('setInfrared', {
     brightness: brightness
   }, this.client.source);
   packetObj.target = this.id;
@@ -157,9 +157,9 @@ Light.prototype.maxIR = function(brightness, callback) {
 Light.prototype.getState = function(callback) {
   validate.callback(callback, 'light getState method');
 
-  var packetObj = packet.create('getLight', {}, this.client.source);
+  const packetObj = packet.create('getLight', {}, this.client.source);
   packetObj.target = this.id;
-  var sqnNumber = this.client.send(packetObj);
+  const sqnNumber = this.client.send(packetObj);
   this.client.addMessageHandler('stateLight', function(err, msg) {
     if (err) {
       return callback(err, null);
@@ -187,9 +187,9 @@ Light.prototype.getState = function(callback) {
 Light.prototype.getMaxIR = function(callback) {
   validate.callback(callback, 'light getMaxIR method');
 
-  var packetObj = packet.create('getInfrared', {}, this.client.source);
+  const packetObj = packet.create('getInfrared', {}, this.client.source);
   packetObj.target = this.id;
-  var sqnNumber = this.client.send(packetObj);
+  const sqnNumber = this.client.send(packetObj);
   this.client.addMessageHandler('stateInfrared', function(err, msg) {
     if (err) {
       return callback(err, null);
@@ -209,14 +209,14 @@ Light.prototype.getMaxIR = function(callback) {
 Light.prototype.getHardwareVersion = function(callback) {
   validate.callback(callback, 'light getHardwareVersion method');
 
-  var packetObj = packet.create('getVersion', {}, this.client.source);
+  const packetObj = packet.create('getVersion', {}, this.client.source);
   packetObj.target = this.id;
-  var sqnNumber = this.client.send(packetObj);
+  const sqnNumber = this.client.send(packetObj);
   this.client.addMessageHandler('stateVersion', function(err, msg) {
     if (err) {
       return callback(err, null);
     }
-    var versionInfo = _.pick(msg, [
+    const versionInfo = _.pick(msg, [
       'vendorId',
       'productId',
       'version'
@@ -235,9 +235,9 @@ Light.prototype.getHardwareVersion = function(callback) {
 Light.prototype.getFirmwareVersion = function(callback) {
   validate.callback(callback, 'light getFirmwareIgetFirmwareVersion method');
 
-  var packetObj = packet.create('getHostFirmware', {}, this.client.source);
+  const packetObj = packet.create('getHostFirmware', {}, this.client.source);
   packetObj.target = this.id;
-  var sqnNumber = this.client.send(packetObj);
+  const sqnNumber = this.client.send(packetObj);
   this.client.addMessageHandler('stateHostFirmware', function(err, msg) {
     if (err) {
       return callback(err, null);
@@ -256,9 +256,9 @@ Light.prototype.getFirmwareVersion = function(callback) {
 Light.prototype.getFirmwareInfo = function(callback) {
   validate.callback(callback, 'light getFirmwareInfo method');
 
-  var packetObj = packet.create('getHostInfo', {}, this.client.source);
+  const packetObj = packet.create('getHostInfo', {}, this.client.source);
   packetObj.target = this.id;
-  var sqnNumber = this.client.send(packetObj);
+  const sqnNumber = this.client.send(packetObj);
   this.client.addMessageHandler('stateHostInfo', function(err, msg) {
     if (err) {
       return callback(err, null);
@@ -278,9 +278,9 @@ Light.prototype.getFirmwareInfo = function(callback) {
 Light.prototype.getWifiInfo = function(callback) {
   validate.callback(callback, 'light getWifiInfo method');
 
-  var packetObj = packet.create('getWifiInfo', {}, this.client.source);
+  const packetObj = packet.create('getWifiInfo', {}, this.client.source);
   packetObj.target = this.id;
-  var sqnNumber = this.client.send(packetObj);
+  const sqnNumber = this.client.send(packetObj);
   this.client.addMessageHandler('stateWifiInfo', function(err, msg) {
     if (err) {
       return callback(err, null);
@@ -300,9 +300,9 @@ Light.prototype.getWifiInfo = function(callback) {
 Light.prototype.getWifiVersion = function(callback) {
   validate.callback(callback, 'light getWifiVersion method');
 
-  var packetObj = packet.create('getWifiFirmware', {}, this.client.source);
+  const packetObj = packet.create('getWifiFirmware', {}, this.client.source);
   packetObj.target = this.id;
-  var sqnNumber = this.client.send(packetObj);
+  const sqnNumber = this.client.send(packetObj);
   this.client.addMessageHandler('stateWifiFirmware', function(err, msg) {
     if (err) {
       return callback(err, null);
@@ -331,10 +331,10 @@ Light.prototype.getLabel = function(callback, cache) {
       return callback(null, this.label);
     }
   }
-  var packetObj = packet.create('getLabel', {
+  const packetObj = packet.create('getLabel', {
     target: this.id
   }, this.client.source);
-  var sqnNumber = this.client.send(packetObj);
+  const sqnNumber = this.client.send(packetObj);
   this.client.addMessageHandler('stateLabel', function(err, msg) {
     if (err) {
       return callback(err, null);
@@ -361,7 +361,7 @@ Light.prototype.setLabel = function(label, callback) {
   }
   validate.optionalCallback(callback, 'light setLabel method');
 
-  var packetObj = packet.create('setLabel', {label: label}, this.client.source);
+  const packetObj = packet.create('setLabel', {label: label}, this.client.source);
   packetObj.target = this.id;
   this.client.send(packetObj, callback);
 };
@@ -373,9 +373,9 @@ Light.prototype.setLabel = function(label, callback) {
 Light.prototype.getAmbientLight = function(callback) {
   validate.callback(callback, 'light getAmbientLight method');
 
-  var packetObj = packet.create('getAmbientLight', {}, this.client.source);
+  const packetObj = packet.create('getAmbientLight', {}, this.client.source);
   packetObj.target = this.id;
-  var sqnNumber = this.client.send(packetObj);
+  const sqnNumber = this.client.send(packetObj);
   this.client.addMessageHandler('stateAmbientLight', function(err, msg) {
     if (err) {
       return callback(err, null);
@@ -391,9 +391,9 @@ Light.prototype.getAmbientLight = function(callback) {
 Light.prototype.getPower = function(callback) {
   validate.callback(callback, 'light getPower method');
 
-  var packetObj = packet.create('getPower', {}, this.client.source);
+  const packetObj = packet.create('getPower', {}, this.client.source);
   packetObj.target = this.id;
-  var sqnNumber = this.client.send(packetObj);
+  const sqnNumber = this.client.send(packetObj);
   this.client.addMessageHandler('statePower', function(err, msg) {
     if (err) {
       return callback(err, null);
@@ -416,11 +416,11 @@ Light.prototype.getColorZones = function(startIndex, endIndex, callback) {
   validate.optionalZoneIndex(endIndex, 'light getColorZones method');
   validate.optionalCallback(callback, 'light getColorZones method');
 
-  var packetObj = packet.create('getColorZones', {}, this.client.source);
+  const packetObj = packet.create('getColorZones', {}, this.client.source);
   packetObj.target = this.id;
   packetObj.startIndex = startIndex;
   packetObj.endIndex = endIndex;
-  var sqnNumber = this.client.send(packetObj);
+  const sqnNumber = this.client.send(packetObj);
   if (endIndex === undefined || startIndex === endIndex) {
     this.client.addMessageHandler('stateZone', function(err, msg) {
       if (err) {
@@ -483,8 +483,8 @@ Light.prototype.colorZones = function(startIndex, endIndex, hue, saturation, bri
   saturation = Math.round(saturation / constants.HSBK_MAXIMUM_SATURATION * 65535);
   brightness = Math.round(brightness / constants.HSBK_MAXIMUM_BRIGHTNESS * 65535);
 
-  var appReq = apply === false ? constants.APPLICATION_REQUEST_VALUES.NO_APPLY : constants.APPLICATION_REQUEST_VALUES.APPLY;
-  var packetObj = packet.create('setColorZones', {
+  const appReq = apply === false ? constants.APPLICATION_REQUEST_VALUES.NO_APPLY : constants.APPLICATION_REQUEST_VALUES.APPLY;
+  const packetObj = packet.create('setColorZones', {
     startIndex: startIndex,
     endIndex: endIndex,
     hue: hue,

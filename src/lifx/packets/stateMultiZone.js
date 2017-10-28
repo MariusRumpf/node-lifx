@@ -1,8 +1,8 @@
 'use strict';
 
-var constants = require('../../lifx').constants;
+const constants = require('../../lifx').constants;
 
-var Packet = {
+const Packet = {
   size: 50
 };
 
@@ -12,8 +12,8 @@ var Packet = {
  * @return {Object}     Information contained in packet
  */
 Packet.toObject = function(buf) {
-  var obj = {};
-  var offset = 0;
+  const obj = {};
+  let offset = 0;
 
   if (buf.length < 10) {
     throw new Error('Invalid length for stateMultiZone LIFX packet, expected minimum 10 but received ' + buf.length);
@@ -27,7 +27,7 @@ Packet.toObject = function(buf) {
 
   obj.color = [];
   while (buf.length - offset >= 8) {
-    var colorObj = {};
+    const colorObj = {};
     colorObj.hue = buf.readUInt16LE(offset);
     offset += 2;
     colorObj.saturation = buf.readUInt16LE(offset);
@@ -51,9 +51,9 @@ Packet.toObject = function(buf) {
  * @return {Buffer} packet
  */
 Packet.toBuffer = function(obj) {
-  var buf = new Buffer();
+  const buf = new Buffer();
   buf.fill(0);
-  var offset = 0;
+  let offset = 0;
 
   if (typeof obj.count !== 'number' && obj.count < 0 || obj.count > 255) {
     throw new RangeError('Invalid count value given for stateMultiZone LIFX packet, must be a number between 0 and 255');
