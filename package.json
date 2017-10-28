@@ -50,6 +50,7 @@
     "build:watch": "npm run build -- --watch",
     "clean": "rimraf lib",
     "lint": "eslint src/ test/ example/ cli.js",
+    "lint:fix": "npm run lint -- --fix",
     "pretest": "npm run lint",
     "unittest": "mocha -u tdd -r babelhook --recursive test/unit/",
     "test": "istanbul cover -root lib/ node_modules/mocha/bin/_mocha -- -u tdd -r babelhook --recursive test/unit/",
