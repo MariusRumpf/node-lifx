@@ -19,7 +19,8 @@
     "eslint": "^3.19.0",
     "istanbul": "^0.4.0",
     "lolex": "^1.6.0",
-    "mocha": "^3.5.3"
+    "mocha": "^3.5.3",
+    "rimraf": "^2.6.2"
   },
   "directories": {
     "test": "test",
@@ -44,7 +45,11 @@
     "url": "git+https://github.com/MariusRumpf/node-lifx.git"
   },
   "scripts": {
-    "lint": "eslint lib/ test/ example/ cli.js",
+    "prebuild": "npm run clean && mkdir -p lib/lifx && cp src/lifx/products.json lib/lifx",
+    "build": "npm run prebuild && babel src --out-dir lib",
+    "build:watch": "npm run build -- --watch",
+    "clean": "rimraf lib",
+    "lint": "eslint src/ test/ example/ cli.js",
     "pretest": "npm run lint",
     "unittest": "mocha -u tdd -r babelhook --recursive test/unit/",
     "test": "istanbul cover -root lib/ node_modules/mocha/bin/_mocha -- -u tdd -r babelhook --recursive test/unit/",
