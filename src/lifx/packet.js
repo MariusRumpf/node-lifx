@@ -2,7 +2,7 @@
 
 const {constants, utils} = require('../lifx');
 const packets = require('./packets');
-const _ = require('lodash');
+const {result, find, extend, assign} = require('lodash');
 
 /*
   Package headers 36 bit in total consisting of
@@ -159,11 +159,11 @@ Packet.toObject = function(buf) {
   }
 
   if (obj.type !== undefined) {
-    const typeName = _.result(_.find(this.typeList, {id: obj.type}), 'name');
+    const typeName = result(find(this.typeList, {id: obj.type}), 'name');
     if (packets[typeName] !== undefined) {
       if (typeof packets[typeName].toObject === 'function') {
         const specificObj = packets[typeName].toObject(buf.slice(constants.PACKET_HEADER_SIZE));
-        obj = _.extend(obj, specificObj);
+        obj = extend(obj, specificObj);
       }
     }
   }
@@ -254,9 +254,9 @@ Packet.headerToBuffer = function(obj) {
   offset += 8;
 
   if (typeof obj.type === 'number') {
-    obj.type = _.result(_.find(this.typeList, {id: obj.type}), 'id');
+    obj.type = result(find(this.typeList, {id: obj.type}), 'id');
   } else if (typeof obj.type === 'string' || obj.type instanceof String) {
-    obj.type = _.result(_.find(this.typeList, {name: obj.type}), 'id');
+    obj.type = result(find(this.typeList, {name: obj.type}), 'id');
   }
   if (obj.type === undefined) {
     throw new Error('Unknown lifx packet of type: ' + obj.type);
@@ -279,9 +279,9 @@ Packet.toBuffer = function(obj) {
   if (obj.type !== undefined) {
     // Map id to string if needed
     if (typeof obj.type === 'number') {
-      obj.type = _.result(_.find(this.typeList, {id: obj.type}), 'name');
+      obj.type = result(find(this.typeList, {id: obj.type}), 'name');
     } else if (typeof obj.type === 'string' || obj.type instanceof String) {
-      obj.type = _.result(_.find(this.typeList, {name: obj.type}), 'name');
+      obj.type = result(find(this.typeList, {name: obj.type}), 'name');
     }
 
     if (obj.type !== undefined) {
@@ -313,11 +313,11 @@ Packet.create = function(type, params, source, target) {
   if (type !== undefined) {
     // Check if type is valid
     if (typeof type === 'string' || type instanceof String) {
-      obj.type = _.result(_.find(this.typeList, {name: type}), 'id');
+      obj.type = result(find(this.typeList, {name: type}), 'id');
     } else if (typeof type === 'number') {
-      const typeMatch = _.find(this.typeList, {id: type});
-      obj.type = _.result(typeMatch, 'id');
-      type = _.result(typeMatch, 'name');
+      const typeMatch = find(this.typeList, {id: type});
+      obj.type = result(typeMatch, 'id');
+      type = result(typeMatch, 'name');
     }
     if (obj.type === undefined) {
       return false;
@@ -337,7 +337,7 @@ Packet.create = function(type, params, source, target) {
     obj.tagged = packets[type].tagged;
   }
 
-  return _.assign(obj, params);
+  return assign(obj, params);
 };
 
 module.exports = Packet;

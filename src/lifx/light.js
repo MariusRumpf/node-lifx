@@ -1,7 +1,7 @@
 'use strict';
 
 const {packet, constants, validate, utils} = require('../lifx');
-const _ = require('lodash');
+const {assign, pick} = require('lodash');
 
 /**
  * A representation of a light bulb
@@ -213,12 +213,12 @@ Light.prototype.getHardwareVersion = function(callback) {
     if (err) {
       return callback(err, null);
     }
-    const versionInfo = _.pick(msg, [
+    const versionInfo = pick(msg, [
       'vendorId',
       'productId',
       'version'
     ]);
-    callback(null, _.assign(
+    callback(null, assign(
       versionInfo,
       utils.getHardwareDetails(versionInfo.vendorId, versionInfo.productId)
     ));
@@ -239,7 +239,7 @@ Light.prototype.getFirmwareVersion = function(callback) {
     if (err) {
       return callback(err, null);
     }
-    callback(null, _.pick(msg, [
+    callback(null, pick(msg, [
       'majorVersion',
       'minorVersion'
     ]));
@@ -260,7 +260,7 @@ Light.prototype.getFirmwareInfo = function(callback) {
     if (err) {
       return callback(err, null);
     }
-    callback(null, _.pick(msg, [
+    callback(null, pick(msg, [
       'signal',
       'tx',
       'rx'
@@ -282,7 +282,7 @@ Light.prototype.getWifiInfo = function(callback) {
     if (err) {
       return callback(err, null);
     }
-    callback(null, _.pick(msg, [
+    callback(null, pick(msg, [
       'signal',
       'tx',
       'rx'
@@ -304,7 +304,7 @@ Light.prototype.getWifiVersion = function(callback) {
     if (err) {
       return callback(err, null);
     }
-    return callback(null, _.pick(msg, [
+    return callback(null, pick(msg, [
       'majorVersion',
       'minorVersion'
     ]));

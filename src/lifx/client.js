@@ -3,7 +3,7 @@
 const util = require('util');
 const dgram = require('dgram');
 const EventEmitter = require('eventemitter3');
-const _ = require('lodash');
+const {defaults, isArray, result, find, bind, forEach} = require('lodash');
 const Packet = require('../lifx').packet;
 const {Light, constants, utils} = require('../lifx');
 
@@ -63,7 +63,7 @@ util.inherits(Client, EventEmitter);
  * @param {Function} [callback] Called after initialation
  */
 Client.prototype.init = function(options, callback) {
-  const defaults = {
+  const defaultOpts = {
     address: '0.0.0.0',
     port: 0,
     debug: false,
@@ -79,7 +79,7 @@ Client.prototype.init = function(options, callback) {
   };
 
   options = options || {};
-  const opts = _.defaults(options, defaults);
+  const opts = defaults(options, defaultOpts);
 
   if (typeof opts.port !== 'number') {
     throw new TypeError('LIFX Client port option must be a number');
@@ -126,7 +126,7 @@ Client.prototype.init = function(options, callback) {
   }
   this.sendPort = opts.sendPort;
 
-  if (!_.isArray(opts.lights)) {
+  if (!isArray(opts.lights)) {
     throw new TypeError('LIFX Client lights option must be an array');
   } else {
     opts.lights.forEach(function(light) {
@@ -177,7 +177,7 @@ Client.prototype.init = function(options, callback) {
       console.trace(parsedMsg);
     } else {
       // Convert type before emitting
-      const messageTypeName = _.result(_.find(Packet.typeList, {id: parsedMsg.type}), 'name');
+      const messageTypeName = result(find(Packet.typeList, {id: parsedMsg.type}), 'name');
       if (messageTypeName !== undefined) {
         parsedMsg.type = messageTypeName;
       }
@@ -297,7 +297,7 @@ Client.prototype.startDiscovery = function(lights) {
   lights = lights || [];
   const sendDiscoveryPacket = function() {
     // Sign flag on inactive lights
-    _.forEach(this.devices, _.bind(function(info, deviceId) {
+    forEach(this.devices, bind(function(info, deviceId) {
       if (this.devices[deviceId].status !== 'off') {
         const diff = this.discoveryPacketSequence - info.seenOnDiscovery;
         if (diff >= this.lightOfflineTolerance) {
@@ -530,7 +530,7 @@ Client.prototype.addMessageHandler = function(type, callback, sequenceNumber) {
     throw new TypeError('LIFX Client addMessageHandler expects callback parameter to be a function');
   }
 
-  const typeName = _.find(Packet.typeList, {name: type});
+  const typeName = find(Packet.typeList, {name: type});
   if (typeName === undefined) {
     throw new RangeError('LIFX Client addMessageHandler unknown packet type: ' + type);
   }
@@ -571,7 +571,7 @@ Client.prototype.lights = function(status) {
     }
 
     const result = [];
-    _.forEach(this.devices, function(light) {
+    forEach(this.devices, function(light) {
       if (light.status === status) {
         result.push(light);
       }
@@ -600,20 +600,20 @@ Client.prototype.light = function(identifier) {
 
   // Dots or colons is high likely an ip
   if (identifier.indexOf('.') >= 0 || identifier.indexOf(':') >= 0) {
-    result = _.find(this.devices, {address: identifier}) || false;
+    result = find(this.devices, {address: identifier}) || false;
     if (result !== false) {
       return result;
     }
   }
 
   // Search id
-  result = _.find(this.devices, {id: identifier}) || false;
+  result = find(this.devices, {id: identifier}) || false;
   if (result !== false) {
     return result;
   }
 
   // Search label
-  result = _.find(this.devices, {label: identifier}) || false;
+  result = find(this.devices, {label: identifier}) || false;
 
   return result;
 };
