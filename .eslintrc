@@ -2,6 +2,10 @@
   "env": {
     "node": true
   },
+  "parserOptions": {
+    "ecmaVersion": 2015,
+    "sourceType": "module"
+  },
   "rules": {
     "quotes": [2, "single"],
     "indent": [2, 2, {"SwitchCase": 1}],
@@ -147,6 +151,8 @@
     "space-in-parens": [2, "never"],
     "space-infix-ops": 2,
     "space-unary-ops": 2,
-    "spaced-comment": [2, "always"]
+    "spaced-comment": [2, "always"],
+    "prefer-const": "error",
+    "no-var":"error"
   }
 }
