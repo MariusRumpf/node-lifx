@@ -6,5 +6,5 @@
 require('babel-core/register')({
   // Only compile test files
   only: /-test.js$/,
-  presets: ['es2015']
+  presets: ['env']
 });
