@@ -10,8 +10,8 @@ const lolex = require('lolex');
 suite('Client', () => {
   let client;
   let clock;
-  const getMsgQueueLength = () => {
-    return client.messagesQueue.length;
+  const getMsgQueueLength = (queueAddress) => {
+    return client.getMessageQueue(queueAddress).length;
   };
   const getDeviceCount = () => {
     return Object.keys(client.devices).length;
@@ -205,20 +205,22 @@ suite('Client', () => {
       port: 56700,
       size: 41
     };
+    const queueAddress = discoveryInfo.address;
+
     let currDeviceCount = getDeviceCount();
-    let currMsgQueCnt = getMsgQueueLength();
+    let currMsgQueCnt = getMsgQueueLength(queueAddress);
     client.processDiscoveryPacket(new Error(), null, null);
     client.processDiscoveryPacket(null, {
       service: 'udp',
       port: 8080
     }, null);
     assert.equal(currDeviceCount, getDeviceCount(), 'malformed packages ignored');
-    assert.equal(currMsgQueCnt, getMsgQueueLength(), 'malformed packages ignored');
+    assert.equal(currMsgQueCnt, getMsgQueueLength(queueAddress), 'malformed packages ignored');
 
     client.processDiscoveryPacket(null, discoveryMessage, discoveryInfo);
     assert.equal(getDeviceCount(), currDeviceCount + 1, 'device added');
     currDeviceCount += 1;
-    assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'label request done');
+    assert.equal(getMsgQueueLength(queueAddress), currMsgQueCnt + 1, 'label request done');
     currMsgQueCnt += 1;
 
     // Set to offline for recovery check
@@ -226,7 +228,7 @@ suite('Client', () => {
     client.processDiscoveryPacket(null, discoveryMessage, discoveryInfo);
     assert.equal(client.devices[discoveryMessage.target].status, 'on');
     assert.equal(currDeviceCount, getDeviceCount(), 'no new devices but known updated');
-    assert.equal(currMsgQueCnt, getMsgQueueLength(), 'no new messages');
+    assert.equal(currMsgQueCnt, getMsgQueueLength(queueAddress), 'no new messages');
   });
 
   test('finding bulbs by different parameters', () => {
@@ -325,12 +327,12 @@ suite('Client', () => {
       startDiscovery: false
     }, () => {
       assert.equal(client.sequenceNumber, 0, 'starts sequence with 0');
-      assert.lengthOf(client.messagesQueue, 0, 'is empty');
+      assert.lengthOf(client.getMessageQueue(), 0, 'is empty');
       client.send(packet.create('getService', {}, '12345678'));
       assert.equal(client.sequenceNumber, 0, 'sequence is the same after broadcast');
-      assert.lengthOf(client.messagesQueue, 1, 'added to message queue');
-      assert.property(client.messagesQueue[0], 'data', 'has data');
-      assert.notProperty(client.messagesQueue[0], 'address', 'broadcast has no target address');
+      assert.lengthOf(client.getMessageQueue(), 1, 'added to message queue');
+      assert.property(client.getMessageQueue()[0], 'data', 'has data');
+      assert.notProperty(client.getMessageQueue()[0], 'address', 'broadcast has no target address');
 
       client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'f37a4311b857'}, '12345678'));
       assert.equal(client.sequenceNumber, 1, 'sequence increased after specific targeting');
@@ -531,13 +533,14 @@ suite('Client', () => {
       const shouldNotBeCalled = () => {
         throw new Error();
       };
+      const queueAddress = client.broadcastAddress;
 
       client.init({
         startDiscovery: false
       }, () => {
         client.socket.on('message', shouldNotBeCalled);
-        client.sendingProcess();
-        assert.isNull(client.sendTimer);
+        client.sendingProcess(queueAddress);
+        assert.isUndefined(client.sendTimers[queueAddress]);
         client.socket.removeListener('message', shouldNotBeCalled);
         done();
       });
@@ -551,22 +554,24 @@ suite('Client', () => {
         done();
       };
       const packetObj = packet.create('setPower', {level: 65535}, client.source);
+      const queueAddress = client.broadcastAddress;
 
       client.init({
         port: constants.LIFX_DEFAULT_PORT,
         startDiscovery: false
       }, () => {
         client.socket.on('message', packetSendCallback);
-
-        let currMsgQueCnt = getMsgQueueLength();
+        let currMsgQueCnt = getMsgQueueLength(queueAddress);
         client.send(packetObj);
-        assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
+        assert.equal(getMsgQueueLength(queueAddress), currMsgQueCnt + 1, 'sends a packet to the queue');
         currMsgQueCnt += 1;
-        assert.isNotNull(client.sendTimer);
+        assert.isDefined(client.sendTimers[queueAddress]);
         client.stopSendingProcess(); // We don't want automatic calling of sending
 
-        client.sendingProcess(); // Call sending it manualy
-        assert.equal(getMsgQueueLength(), currMsgQueCnt - 1, 'removes the packet when send');
+        const sendingProcess = client.sendingProcess(queueAddress);
+        sendingProcess(); // Call sending it manualy
+
+        assert.equal(getMsgQueueLength(queueAddress), currMsgQueCnt - 1, 'removes the packet when send');
         currMsgQueCnt -= 1;
       });
     });
@@ -579,6 +584,7 @@ suite('Client', () => {
         done();
       };
       const packetObj = packet.create('setPower', {level: 65535}, client.source);
+      const queueAddress = client.broadcastAddress;
 
       client.init({
         port: constants.LIFX_DEFAULT_PORT,
@@ -586,15 +592,17 @@ suite('Client', () => {
       }, () => {
         client.socket.on('message', packetSendCallback);
 
-        let currMsgQueCnt = getMsgQueueLength();
+        let currMsgQueCnt = getMsgQueueLength(queueAddress);
         client.send(packetObj, () => {});
-        assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
+        assert.equal(getMsgQueueLength(queueAddress), currMsgQueCnt + 1, 'sends a packet to the queue');
         currMsgQueCnt += 1;
-        assert.isNotNull(client.sendTimer);
+        assert.isDefined(client.sendTimers[queueAddress]);
         client.stopSendingProcess(); // We don't want automatic calling of sending
 
-        client.sendingProcess(); // Call sending it manualy
-        assert.equal(getMsgQueueLength(), currMsgQueCnt, 'keeps packet when send');
+        const sendingProcess = client.sendingProcess(queueAddress);
+        sendingProcess(); // Call sending it manualy
+
+        assert.equal(getMsgQueueLength(queueAddress), currMsgQueCnt, 'keeps packet when send');
       });
     });
 
@@ -609,22 +617,25 @@ suite('Client', () => {
         done();
       };
       const packetObj = packet.create('setPower', {level: 65535}, client.source);
+      const queueAddress = client.broadcastAddress;
 
       client.init({
         startDiscovery: false
       }, () => {
         client.socket.on('message', shouldNotBeSendCallback);
 
-        let currMsgQueCnt = getMsgQueueLength();
+        let currMsgQueCnt = getMsgQueueLength(queueAddress);
         client.send(packetObj, handlerTimeoutCallback);
-        assert.equal(getMsgQueueLength(), currMsgQueCnt + 1, 'sends a packet to the queue');
+        assert.equal(getMsgQueueLength(queueAddress), currMsgQueCnt + 1, 'sends a packet to the queue');
         currMsgQueCnt += 1;
-        assert.isNotNull(client.sendTimer);
+        assert.isDefined(client.sendTimers[queueAddress]);
         client.stopSendingProcess(); // We don't want automatic calling of sending
-        client.messagesQueue[0].timesSent = client.resendMaxTimes; // This triggers error
+        client.getMessageQueue(queueAddress)[0].timesSent = client.resendMaxTimes; // This triggers error
 
-        client.sendingProcess(); // Call sending it manualy
-        assert.equal(getMsgQueueLength(), currMsgQueCnt - 1, 'removes packet after max retries and callback');
+        const sendingProcess = client.sendingProcess(queueAddress);
+        sendingProcess(); // Call sending it manualy
+
+        assert.equal(getMsgQueueLength(queueAddress), currMsgQueCnt - 1, 'removes packet after max retries and callback');
         currMsgQueCnt -= 1;
       });
     });
