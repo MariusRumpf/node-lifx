@@ -6,7 +6,8 @@
   "exclude": [
     "node_modules",
     "test",
-    "tmp"
+    "tmp",
+    "lib"
   ],
   "typeAcquisition": {
     "enable": true
