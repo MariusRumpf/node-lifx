@@ -6,6 +6,7 @@ const packet = require('../../').packet;
 const constants = require('../../').constants;
 const assert = require('chai').assert;
 const lolex = require('lolex');
+const sinon = require('sinon');
 
 suite('Client', () => {
   let client;
@@ -635,6 +636,52 @@ suite('Client', () => {
         client.sendingProcess(); // Call sending it manualy
         assert.equal(getMsgQueueLength(), currMsgQueCnt - 1, 'removes packet after max retries and callback');
         currMsgQueCnt -= 1;
+      });
+    });
+
+    test('stops discovery after predefined lights found when stopAfterDiscovery is true', (done) => {
+      const discoveryMessage = {
+        size: 41,
+        addressable: true,
+        tagged: false,
+        origin: true,
+        protocolVersion: 1024,
+        source: '0c583dd9',
+        target: 'd073d5006d72',
+        site: 'LIFXV2',
+        ackRequired: false,
+        resRequired: false,
+        sequence: 0,
+        type: 'stateService',
+        service: 'udp',
+        port: 56700
+      };
+      const discoveryInfo = {
+        address: '192.168.2.108',
+        family: 'IPv4',
+        port: 56700,
+        size: 41
+      };
+      const discoveryMessage2 = Object.assign({}, discoveryMessage, {sequence: 1});
+      const discoveryInfo2 = Object.assign({}, discoveryInfo, {address: '192.168.2.200'});
+      const labelPacket = {
+        target: 'd073d5006d72',
+        label: 'test'
+      };
+      const discoveryCompletedCallback = sinon.spy();
+
+      client.on('discovery-completed', discoveryCompletedCallback);
+      client.init({
+        startDiscovery: false,
+        lights: ['192.168.2.108'],
+        stopAfterDiscovery: true
+      }, () => {
+        client.processDiscoveryPacket(null, discoveryMessage, discoveryInfo);
+        client.processLabelPacket(null, labelPacket);
+        client.processDiscoveryPacket(null, discoveryMessage2, discoveryInfo2);
+
+        assert.isTrue((discoveryCompletedCallback.called));
+        done();
       });
     });
   });
