@@ -51,6 +51,7 @@
     "build": "npm run prebuild && babel src --out-dir lib",
     "build:watch": "npm run build -- --watch",
     "clean": "rimraf lib",
+    "prepublishOnly": "npm run build",
     "lint": "eslint src/ test/ example/ cli.js",
     "lint:fix": "npm run lint -- --fix",
     "pretest": "npm run lint",
