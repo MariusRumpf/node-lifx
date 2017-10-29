@@ -26,13 +26,13 @@ class Client {
     this.discoveryPacketSequence = 0;
     this.messageHandlers = [{
       type: 'stateService',
-      callback: this.processDiscoveryPacket.bind(this)
+      callback: this.processDiscoveryPacket
     }, {
       type: 'stateLabel',
-      callback: this.processLabelPacket.bind(this)
+      callback: this.processLabelPacket
     }, {
       type: 'stateLight',
-      callback: this.processLabelPacket.bind(this)
+      callback: this.processLabelPacket
     }];
     this.sequenceNumber = 0;
     this.lightOfflineTolerance = 3;
@@ -148,15 +148,15 @@ class Client {
       }
     }
 
-    this.socket.on('error', function(err) {
+    this.socket.on('error', (err) => {
       this.isSocketBound = false;
       console.error('LIFX Client UDP error');
       console.trace(err);
       this.socket.close();
       this.emit('error', err);
-    }.bind(this));
+    });
 
-    this.socket.on('message', function(msg, rinfo) {
+    this.socket.on('message', (msg, rinfo) => {
       // Ignore own messages and false formats
       if (utils.getHostIPs().indexOf(rinfo.address) >= 0 || !Buffer.isBuffer(msg)) {
         return;
@@ -188,9 +188,9 @@ class Client {
 
         this.emit('message', parsedMsg, rinfo);
       }
-    }.bind(this));
+    });
 
-    this.socket.bind(opts.port, opts.address, function() {
+    this.socket.bind(opts.port, opts.address, () => {
       this.isSocketBound = true;
       this.socket.setBroadcast(true);
       this.emit('listening');
@@ -203,7 +203,7 @@ class Client {
       if (typeof callback === 'function') {
         return callback();
       }
-    }.bind(this));
+    });
   }
 
   /**
@@ -221,7 +221,7 @@ class Client {
    * Sends a packet from the messages queue or stops the sending process
    * if queue is empty
    **/
-  sendingProcess() {
+  sendingProcess = () => {
     if (!this.isSocketBound) {
       this.stopSendingProcess();
       console.log('LIFX Client stopped sending due to unbound socket');
@@ -256,13 +256,13 @@ class Client {
           // Add to the end of the queue again
           this.messagesQueue.unshift(msg);
         } else {
-          this.messageHandlers.forEach(function(handler, hdlrIndex) {
+          this.messageHandlers.forEach((handler, hdlrIndex) => {
             if (handler.type === 'acknowledgement' && handler.sequenceNumber === msg.sequence) {
               this.messageHandlers.splice(hdlrIndex, 1);
               const err = new Error('No LIFX response after max resend limit of ' + this.resendMaxTimes);
               return handler.callback(err, null, null);
             }
-          }.bind(this));
+          });
         }
       }
     } else {
@@ -275,7 +275,7 @@ class Client {
    */
   startSendingProcess() {
     if (this.sendTimer === null) { // Already running?
-      this.sendTimer = setInterval(this.sendingProcess.bind(this), constants.MESSAGE_RATE_LIMIT);
+      this.sendTimer = setInterval(this.sendingProcess, constants.MESSAGE_RATE_LIMIT);
     }
   }
 
@@ -297,7 +297,7 @@ class Client {
    */
   startDiscovery(lights) {
     lights = lights || [];
-    const sendDiscoveryPacket = function() {
+    const sendDiscoveryPacket = () => {
       // Sign flag on inactive lights
       forEach(this.devices, bind(function(info, deviceId) {
         if (this.devices[deviceId].status !== 'off') {
@@ -326,7 +326,7 @@ class Client {
       } else {
         this.discoveryPacketSequence += 1;
       }
-    }.bind(this);
+    };
 
     this.discoveryTimer = setInterval(
       sendDiscoveryPacket,
@@ -353,12 +353,12 @@ class Client {
           if (handler.sequenceNumber === msg.sequence) {
             // Remove if specific packet was request, since it should only be called once
             this.messageHandlers.splice(hdlrIndex, 1);
-            this.messagesQueue.forEach(function(packet, packetIndex) {
+            this.messagesQueue.forEach((packet, packetIndex) => {
               if (packet.transactionType === constants.PACKET_TRANSACTION_TYPES.REQUEST_RESPONSE &&
                 packet.sequence === msg.sequence) {
                 this.messagesQueue.splice(packetIndex, 1);
               }
-            }.bind(this));
+            });
 
             // Call the function requesting the packet
             return handler.callback(null, msg, rinfo);
@@ -388,7 +388,7 @@ class Client {
    * @param  {Object} msg The discovery report package
    * @param  {Object} rinfo Remote host details
    */
-  processDiscoveryPacket(err, msg, rinfo) {
+  processDiscoveryPacket = (err, msg, rinfo) => {
     if (err) {
       return;
     }
@@ -428,7 +428,7 @@ class Client {
    * @param {Object} err Error if existant
    * @param {Object} msg The state label package
    */
-  processLabelPacket(err, msg) {
+  processLabelPacket = (err, msg) => {
     if (err) {
       return;
     }
