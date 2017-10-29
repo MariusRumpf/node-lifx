@@ -11,7 +11,6 @@
     "lodash": "^4.17.4"
   },
   "devDependencies": {
-    "@types/eventemitter3": "^2.0.2",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.1",
