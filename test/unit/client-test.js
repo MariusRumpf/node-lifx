@@ -56,7 +56,8 @@ suite('Client', () => {
       resendMaxTimes: 2,
       lights: ['192.168.0.100'],
       broadcast: '192.168.0.255',
-      sendPort: 65534
+      sendPort: 65534,
+      stopAfterDiscovery: true
     }, () => {
       assert.equal(client.address().address, '127.0.0.1');
       assert.equal(client.address().port, 65535);
@@ -67,6 +68,8 @@ suite('Client', () => {
       assert.equal(client.resendMaxTimes, 2);
       assert.equal(client.broadcastAddress, '192.168.0.255');
       assert.equal(client.sendPort, 65534);
+      assert.equal(client.stopAfterDiscovery, true);
+      assert.deepEqual(client.lightAddresses, ['192.168.0.100']);
       done();
     });
   });
@@ -118,6 +121,10 @@ suite('Client', () => {
 
     assert.throw(() => {
       client.init({lights: '192.168.0.100'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({lights: ['192.168.0.100'], stopAfterDiscovery: 'false'});
     }, TypeError);
 
     assert.throw(() => {
