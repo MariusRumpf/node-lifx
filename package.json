@@ -56,6 +56,7 @@
     "lint:fix": "npm run lint -- --fix",
     "pretest": "npm run lint && npm run build",
     "unittest": "mocha -u tdd -r babelhook --recursive test/unit/ || true",
+    "unittest:bail": "mocha -u tdd -r babelhook --recursive test/unit/ --bail || true",
     "test": "istanbul cover -root lib/ node_modules/mocha/bin/_mocha -- -u tdd -r babelhook --recursive test/unit/",
     "report-coverage": "cat ./coverage/coverage.json | node_modules/codecov.io/bin/codecov.io.js"
   }
