@@ -4,15 +4,15 @@ const {Packet, constants, validate, utils} = require('../lifx');
 const {assign, pick} = require('lodash');
 
 class Light {
-  constructor(constr) {
-    this.client = constr.client;
-    this.id = constr.id; // Used to target the light
-    this.address = constr.address;
-    this.port = constr.port;
+  constructor(options) {
+    this.client = options.client;
+    this.id = options.id; // Used to target the light
+    this.address = options.address;
+    this.port = options.port;
     this.label = null;
     this.status = 'on';
 
-    this.seenOnDiscovery = constr.seenOnDiscovery;
+    this.seenOnDiscovery = options.seenOnDiscovery;
   }
 
   /**
