@@ -402,7 +402,9 @@ client.init({
   debug: false, // logs all messages in console if turned on
   address: '0.0.0.0', // the IPv4 address to bind the udp connection to
   broadcast: '255.255.255.255', // set's the IPv4 broadcast address which is addressed to discover bulbs
-  lights: [] // Can be used provide a list of known light IPv4 ip addresses if broadcast packets in network are not allowed
-             // For example: ['192.168.0.112', '192.168.0.114'], this will then be addressed directly
+  lights: [], // Can be used provide a list of known light IPv4 ip addresses if broadcast packets in network are not allowed
+              // For example: ['192.168.0.112', '192.168.0.114'], this will then be addressed directly
+  stopAfterDiscovery: false // stops discovery process after discovering all known lights (requires list
+                            // of addresses provided with "lights" setting)
 });
 ```
