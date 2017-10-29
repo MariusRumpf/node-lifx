@@ -625,4 +625,4 @@ class Client {
 
 util.inherits(Client, EventEmitter);
 
-exports.Client = Client;
+module.exports = Client;

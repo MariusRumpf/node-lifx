@@ -499,4 +499,4 @@ class Light {
   }
 }
 
-module.exports.Light = Light;
+module.exports = Light;
