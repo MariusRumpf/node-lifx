@@ -20,6 +20,7 @@
     "eslint": "^4.10.0",
     "istanbul": "^0.4.0",
     "lolex": "^1.6.0",
+    "mkdirp": "^0.5.1",
     "mocha": "^3.5.3",
     "rimraf": "^2.6.2"
   },
@@ -46,7 +47,7 @@
     "url": "git+https://github.com/MariusRumpf/node-lifx.git"
   },
   "scripts": {
-    "prebuild": "npm run clean && mkdir -p lib/lifx && cp src/lifx/products.json lib/lifx",
+    "prebuild": "npm run clean && mkdirp lib/lifx && cp src/lifx/products.json lib/lifx",
     "build": "npm run prebuild && babel src --out-dir lib",
     "build:watch": "npm run build -- --watch",
     "clean": "rimraf lib",
