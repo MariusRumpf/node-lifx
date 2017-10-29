@@ -1,6 +1,6 @@
 'use strict';
 
-const Packet = require('../../../').packet;
+const Packet = require('../../../').Packet;
 const assert = require('chai').assert;
 
 suite('Packet getService', () => {

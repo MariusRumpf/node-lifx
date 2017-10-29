@@ -10,7 +10,7 @@ lifx.validate = require('./lifx/validate');
 lifx.utils = require('./lifx/utils');
 
 // Export packet parser
-lifx.packet = require('./lifx/packet');
+lifx.Packet = require('./lifx/packet');
 
 // Export light device object
 lifx.Light = require('./lifx/light').Light;
