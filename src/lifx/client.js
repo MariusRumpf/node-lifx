@@ -3,7 +3,7 @@
 const util = require('util');
 const dgram = require('dgram');
 const EventEmitter = require('eventemitter3');
-const {defaults, isArray, result, find, bind, forEach} = require('lodash');
+const {defaults, isArray, result, find, bind, forEach, keys, isNil} = require('lodash');
 const Packet = require('../lifx').packet;
 const {Light, constants, utils} = require('../lifx');
 
@@ -19,8 +19,8 @@ function Client() {
   this.isSocketBound = false;
   this.devices = {};
   this.port = null;
-  this.messagesQueue = [];
-  this.sendTimer = null;
+  this.messageQueues = {};
+  this.sendTimers = {};
   this.discoveryTimer = null;
   this.discoveryPacketSequence = 0;
   this.messageHandlers = [{
@@ -209,81 +209,104 @@ Client.prototype.init = function(options, callback) {
  */
 Client.prototype.destroy = function() {
   this.stopDiscovery();
-  this.stopSendingProcess();
+  forEach(keys(this.messageQueues), (queueAddress) => {
+    this.stopSendingProcess(queueAddress);
+  });
   if (this.isSocketBound) {
     this.socket.close();
   }
 };
 
 /**
+ * Gets the message queue for the given address. If no address  is defined,
+ * defaults to broadcast address.
+ * @param {String} queueAddress Message queue address
+ * @return {Array} Message queue for the address
+ */
+Client.prototype.getMessageQueue = function(queueAddress = this.broadcastAddress) {
+  if (isNil(this.messageQueues[queueAddress])) {
+    this.messageQueues[queueAddress] = [];
+  }
+  return this.messageQueues[queueAddress];
+};
+
+/**
  * Sends a packet from the messages queue or stops the sending process
  * if queue is empty
+ * @param {String} queueAddress Message queue id
+ * @return {Function} Sending process for the message queue
  **/
-Client.prototype.sendingProcess = function() {
-  if (!this.isSocketBound) {
-    this.stopSendingProcess();
-    console.log('LIFX Client stopped sending due to unbound socket');
-    return;
-  }
+Client.prototype.sendingProcess = function(queueAddress) {
+  const messageQueue = this.getMessageQueue(queueAddress);
+  return () => {
+    if (!this.isSocketBound) {
+      this.stopSendingProcess(queueAddress);
+      console.log('LIFX Client stopped sending due to unbound socket');
+      return;
+    }
 
-  if (this.messagesQueue.length > 0) {
-    const msg = this.messagesQueue.pop();
-    if (msg.address === undefined) {
-      msg.address = this.broadcastAddress;
-    }
-    if (msg.transactionType === constants.PACKET_TRANSACTION_TYPES.ONE_WAY) {
-      this.socket.send(msg.data, 0, msg.data.length, this.sendPort, msg.address);
-      /* istanbul ignore if  */
-      if (this.debug) {
-        console.log('DEBUG - ' + msg.data.toString('hex') + ' to ' + msg.address);
+    if (messageQueue.length > 0) {
+      const msg = messageQueue.pop();
+      if (msg.address === undefined) {
+        msg.address = this.broadcastAddress;
       }
-    } else if (msg.transactionType === constants.PACKET_TRANSACTION_TYPES.REQUEST_RESPONSE) {
-      if (msg.timesSent < this.resendMaxTimes) {
-        if (Date.now() > (msg.timeLastSent + this.resendPacketDelay)) {
-          this.socket.send(msg.data, 0, msg.data.length, this.sendPort, msg.address);
-          msg.timesSent += 1;
-          msg.timeLastSent = Date.now();
-          /* istanbul ignore if  */
-          if (this.debug) {
-            console.log(
-              'DEBUG - ' + msg.data.toString('hex') + ' to ' + msg.address +
-              ', send ' + msg.timesSent + ' time(s)'
-            );
-          }
+      if (msg.transactionType === constants.PACKET_TRANSACTION_TYPES.ONE_WAY) {
+        this.socket.send(msg.data, 0, msg.data.length, this.sendPort, msg.address);
+        /* istanbul ignore if  */
+        if (this.debug) {
+          console.log('DEBUG - ' + msg.data.toString('hex') + ' to ' + msg.address);
         }
-        // Add to the end of the queue again
-        this.messagesQueue.unshift(msg);
-      } else {
-        this.messageHandlers.forEach(function(handler, hdlrIndex) {
-          if (handler.type === 'acknowledgement' && handler.sequenceNumber === msg.sequence) {
-            this.messageHandlers.splice(hdlrIndex, 1);
-            const err = new Error('No LIFX response after max resend limit of ' + this.resendMaxTimes);
-            return handler.callback(err, null, null);
+      } else if (msg.transactionType === constants.PACKET_TRANSACTION_TYPES.REQUEST_RESPONSE) {
+        if (msg.timesSent < this.resendMaxTimes) {
+          if (Date.now() > (msg.timeLastSent + this.resendPacketDelay)) {
+            this.socket.send(msg.data, 0, msg.data.length, this.sendPort, msg.address);
+            msg.timesSent += 1;
+            msg.timeLastSent = Date.now();
+            /* istanbul ignore if  */
+            if (this.debug) {
+              console.log(
+                'DEBUG - ' + msg.data.toString('hex') + ' to ' + msg.address +
+                ', send ' + msg.timesSent + ' time(s)'
+              );
+            }
           }
-        }.bind(this));
+          // Add to the end of the queue again
+          messageQueue.unshift(msg);
+        } else {
+          this.messageHandlers.forEach(function(handler, hdlrIndex) {
+            if (handler.type === 'acknowledgement' && handler.sequenceNumber === msg.sequence) {
+              this.messageHandlers.splice(hdlrIndex, 1);
+              const err = new Error('No LIFX response after max resend limit of ' + this.resendMaxTimes);
+              return handler.callback(err, null, null);
+            }
+          }.bind(this));
+        }
       }
+    } else {
+      this.stopSendingProcess(queueAddress);
     }
-  } else {
-    this.stopSendingProcess();
-  }
+  };
 };
 
 /**
  * Starts the sending of all packages in the queue
+ * @param {String} queueAddress Message queue id
  */
-Client.prototype.startSendingProcess = function() {
-  if (this.sendTimer === null) { // Already running?
-    this.sendTimer = setInterval(this.sendingProcess.bind(this), constants.MESSAGE_RATE_LIMIT);
+Client.prototype.startSendingProcess = function(queueAddress = this.broadcastAddress) {
+  if (isNil(this.sendTimers[queueAddress])) { // Already running?
+    const sendingProcess = this.sendingProcess(queueAddress);
+    this.sendTimers[queueAddress] = setInterval(sendingProcess, constants.MESSAGE_RATE_LIMIT);
   }
 };
 
 /**
  * Stops sending of all packages in the queue
+ * @param {String} queueAddress Message queue id
  */
-Client.prototype.stopSendingProcess = function() {
-  if (this.sendTimer !== null) {
-    clearInterval(this.sendTimer);
-    this.sendTimer = null;
+Client.prototype.stopSendingProcess = function(queueAddress = this.broadcastAddress) {
+  if (!isNil(this.sendTimers[queueAddress])) {
+    clearInterval(this.sendTimers[queueAddress]);
+    delete this.sendTimers[queueAddress];
   }
 };
 
@@ -340,6 +363,7 @@ Client.prototype.startDiscovery = function(lights) {
  * @param  {Object} rinfo rinfo address info to check handler for
  */
 Client.prototype.processMessageHandlers = function(msg, rinfo) {
+  const messageQueue = this.getMessageQueue(rinfo.address);
   // Process only packages for us
   if (msg.source.toLowerCase() !== this.source.toLowerCase()) {
     return;
@@ -351,12 +375,12 @@ Client.prototype.processMessageHandlers = function(msg, rinfo) {
         if (handler.sequenceNumber === msg.sequence) {
           // Remove if specific packet was request, since it should only be called once
           this.messageHandlers.splice(hdlrIndex, 1);
-          this.messagesQueue.forEach(function(packet, packetIndex) {
+          messageQueue.forEach(function(packet, packetIndex) {
             if (packet.transactionType === constants.PACKET_TRANSACTION_TYPES.REQUEST_RESPONSE &&
                 packet.sequence === msg.sequence) {
-              this.messagesQueue.splice(packetIndex, 1);
+              messageQueue.splice(packetIndex, 1);
             }
-          }.bind(this));
+          });
 
           // Call the function requesting the packet
           return handler.callback(null, msg, rinfo);
@@ -483,8 +507,12 @@ Client.prototype.send = function(msg, callback) {
     packet.transactionType = constants.PACKET_TRANSACTION_TYPES.REQUEST_RESPONSE;
   }
   packet.data = Packet.toBuffer(msg);
-  this.messagesQueue.unshift(packet);
-  this.startSendingProcess();
+
+  const queueAddress = packet.address;
+  const messageQueue = this.getMessageQueue(packet.address);
+  messageQueue.unshift(packet);
+
+  this.startSendingProcess(queueAddress);
 
   return this.sequenceNumber;
 };

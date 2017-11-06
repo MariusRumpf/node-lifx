@@ -9,7 +9,7 @@ suite('Light', () => {
   let client;
   let bulb;
   const getMsgQueueLength = () => {
-    return client.messagesQueue.length;
+    return client.getMessageQueue().length;
   };
   const getMsgHandlerLength = () => {
     return client.messageHandlers.length;
