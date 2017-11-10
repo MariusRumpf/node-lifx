@@ -2,7 +2,7 @@
 
 const Client = require('../../').Client;
 const Light = require('../../').Light;
-const packet = require('../../').packet;
+const Packet = require('../../').Packet;
 const constants = require('../../').constants;
 const assert = require('chai').assert;
 const lolex = require('lolex');
@@ -326,17 +326,17 @@ suite('Client', () => {
     }, () => {
       assert.equal(client.sequenceNumber, 0, 'starts sequence with 0');
       assert.lengthOf(client.messagesQueue, 0, 'is empty');
-      client.send(packet.create('getService', {}, '12345678'));
+      client.send(Packet.create('getService', {}, '12345678'));
       assert.equal(client.sequenceNumber, 0, 'sequence is the same after broadcast');
       assert.lengthOf(client.messagesQueue, 1, 'added to message queue');
       assert.property(client.messagesQueue[0], 'data', 'has data');
       assert.notProperty(client.messagesQueue[0], 'address', 'broadcast has no target address');
 
-      client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'f37a4311b857'}, '12345678'));
+      client.send(Packet.create('setPower', {level: 65535, duration: 0, target: 'f37a4311b857'}, '12345678'));
       assert.equal(client.sequenceNumber, 1, 'sequence increased after specific targeting');
 
       client.sequenceNumber = constants.PACKET_HEADER_SEQUENCE_MAX;
-      client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'f37a4311b857'}, '12345678'));
+      client.send(Packet.create('setPower', {level: 65535, duration: 0, target: 'f37a4311b857'}, '12345678'));
       assert.equal(client.sequenceNumber, 0, 'sequence starts over after maximum');
       done();
     });
@@ -550,7 +550,7 @@ suite('Client', () => {
         }
         done();
       };
-      const packetObj = packet.create('setPower', {level: 65535}, client.source);
+      const packetObj = Packet.create('setPower', {level: 65535}, client.source);
 
       client.init({
         port: constants.LIFX_DEFAULT_PORT,
@@ -578,7 +578,7 @@ suite('Client', () => {
         }
         done();
       };
-      const packetObj = packet.create('setPower', {level: 65535}, client.source);
+      const packetObj = Packet.create('setPower', {level: 65535}, client.source);
 
       client.init({
         port: constants.LIFX_DEFAULT_PORT,
@@ -608,7 +608,7 @@ suite('Client', () => {
         assert.isNull(rinfo);
         done();
       };
-      const packetObj = packet.create('setPower', {level: 65535}, client.source);
+      const packetObj = Packet.create('setPower', {level: 65535}, client.source);
 
       client.init({
         startDiscovery: false
