@@ -6,6 +6,7 @@ const packet = require('../../').packet;
 const constants = require('../../').constants;
 const assert = require('chai').assert;
 const lolex = require('lolex');
+const sinon = require('sinon');
 
 suite('Client', () => {
   let client;
@@ -17,15 +18,17 @@ suite('Client', () => {
     return Object.keys(client.devices).length;
   };
 
+  const lightProps = {
+    client: client,
+    id: 'f37a4311b857',
+    address: '192.168.0.1',
+    port: constants.LIFX_DEFAULT_PORT,
+    seenOnDiscovery: 0
+  };
+
   beforeEach(() => {
     client = new Client();
-    client.devices.f37a4311b857 = new Light({
-      client: client,
-      id: 'f37a4311b857',
-      address: '192.168.0.1',
-      port: constants.LIFX_DEFAULT_PORT,
-      seenOnDiscovery: 0
-    });
+    client.devices.f37a4311b857 = new Light(lightProps);
   });
 
   afterEach(() => {
@@ -56,7 +59,8 @@ suite('Client', () => {
       resendMaxTimes: 2,
       lights: ['192.168.0.100'],
       broadcast: '192.168.0.255',
-      sendPort: 65534
+      sendPort: 65534,
+      stopAfterDiscovery: true
     }, () => {
       assert.equal(client.address().address, '127.0.0.1');
       assert.equal(client.address().port, 65535);
@@ -67,6 +71,8 @@ suite('Client', () => {
       assert.equal(client.resendMaxTimes, 2);
       assert.equal(client.broadcastAddress, '192.168.0.255');
       assert.equal(client.sendPort, 65534);
+      assert.equal(client.stopAfterDiscovery, true);
+      assert.deepEqual(client.lightAddresses, ['192.168.0.100']);
       done();
     });
   });
@@ -118,6 +124,10 @@ suite('Client', () => {
 
     assert.throw(() => {
       client.init({lights: '192.168.0.100'});
+    }, TypeError);
+
+    assert.throw(() => {
+      client.init({lights: ['192.168.0.100'], stopAfterDiscovery: 'false'});
     }, TypeError);
 
     assert.throw(() => {
@@ -305,7 +315,7 @@ suite('Client', () => {
     result = client.light('living room');
     assert.isFalse(result, 'case sensitive search');
 
-    result = client.light('192.168.0.1');
+    result = client.light(lightProps.address);
     assert.isFalse(result);
 
     result = client.light('7812e9zonvwouv8754179410ufsknsuvsif724581419713947');
@@ -332,11 +342,11 @@ suite('Client', () => {
       assert.property(client.messagesQueue[0], 'data', 'has data');
       assert.notProperty(client.messagesQueue[0], 'address', 'broadcast has no target address');
 
-      client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'f37a4311b857'}, '12345678'));
+      client.send(packet.create('setPower', {level: 65535, duration: 0, target: lightProps.id}, '12345678'));
       assert.equal(client.sequenceNumber, 1, 'sequence increased after specific targeting');
 
       client.sequenceNumber = constants.PACKET_HEADER_SEQUENCE_MAX;
-      client.send(packet.create('setPower', {level: 65535, duration: 0, target: 'f37a4311b857'}, '12345678'));
+      client.send(packet.create('setPower', {level: 65535, duration: 0, target: lightProps.id}, '12345678'));
       assert.equal(client.sequenceNumber, 0, 'sequence starts over after maximum');
       done();
     });
@@ -626,6 +636,52 @@ suite('Client', () => {
         client.sendingProcess(); // Call sending it manualy
         assert.equal(getMsgQueueLength(), currMsgQueCnt - 1, 'removes packet after max retries and callback');
         currMsgQueCnt -= 1;
+      });
+    });
+
+    test('stops discovery after predefined lights found when stopAfterDiscovery is true', (done) => {
+      const discoveryMessage = {
+        size: 41,
+        addressable: true,
+        tagged: false,
+        origin: true,
+        protocolVersion: 1024,
+        source: '0c583dd9',
+        target: 'd073d5006d72',
+        site: 'LIFXV2',
+        ackRequired: false,
+        resRequired: false,
+        sequence: 0,
+        type: 'stateService',
+        service: 'udp',
+        port: 56700
+      };
+      const discoveryInfo = {
+        address: '192.168.2.108',
+        family: 'IPv4',
+        port: 56700,
+        size: 41
+      };
+      const discoveryMessage2 = Object.assign({}, discoveryMessage, {sequence: 1});
+      const discoveryInfo2 = Object.assign({}, discoveryInfo, {address: '192.168.2.200'});
+      const labelPacket = {
+        target: 'd073d5006d72',
+        label: 'test'
+      };
+      const discoveryCompletedCallback = sinon.spy();
+
+      client.on('discovery-completed', discoveryCompletedCallback);
+      client.init({
+        startDiscovery: false,
+        lights: ['192.168.2.108'],
+        stopAfterDiscovery: true
+      }, () => {
+        client.processDiscoveryPacket(null, discoveryMessage, discoveryInfo);
+        client.processLabelPacket(null, labelPacket);
+        client.processDiscoveryPacket(null, discoveryMessage2, discoveryInfo2);
+
+        assert.isTrue((discoveryCompletedCallback.called));
+        done();
       });
     });
   });

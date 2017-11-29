@@ -22,7 +22,8 @@
     "lolex": "^1.6.0",
     "mkdirp": "^0.5.1",
     "mocha": "^3.5.3",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.6.2",
+    "sinon": "^4.0.2"
   },
   "directories": {
     "test": "test",
