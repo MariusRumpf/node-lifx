@@ -53,6 +53,13 @@ console.log('Press 6 to turn the lights a bright bluish white');
 console.log('Press 7 to turn the lights a bright reddish white');
 console.log('Press 8 to show debug messages including network traffic');
 console.log('Press 9 to hide debug messages including network traffic');
+console.log('Press a to increase brightness by 10');
+console.log('Press z to decrease brightness by 10');
+console.log('Press q to increase hue by 10');
+console.log('Press s to decrease hue by 10');
+console.log('Press w to increase saturation by 10');
+console.log('Press x to decrease saturation by 10');
+
 console.log('Press 0 to exit\n');
 
 process.stdin.setEncoding('utf8');
@@ -128,6 +135,72 @@ process.stdin.on('data', function(key) {
   } else if (key === '9') {
     client.setDebug(false);
     console.log('Debug messages are hidden');
+  } else if (key === 'a') {
+    client.lights().forEach(function(light) {
+      light.getState(function(err, info) {
+        if (err) {
+          console.log(err);
+        }
+        let b = info.color.brightness;
+        b = Math.min(b+10, 100);
+        light.color(info.color.hue, info.color.saturation, b, info.kelvin);
+      });
+    });
+  } else if (key === 'z') {
+    client.lights().forEach(function(light) {
+      light.getState(function(err, info) {
+        if (err) {
+          console.log(err);
+        }
+        let b = info.color.brightness;
+        b = Math.max(b - 10, 0);
+        light.color(info.color.hue, info.color.saturation, b, info.kelvin);
+      });
+    });
+  } else if (key === 'q') {
+    client.lights().forEach(function(light) {
+      light.getState(function(err, info) {
+        if (err) {
+          console.log(err);
+        }
+        let h = info.color.hue;
+        h = Math.min(h + 10, 360);
+        light.color(h, info.color.saturation, info.color.brightness, info.kelvin);
+      });
+    });
+  } else if (key === 's') {
+    client.lights().forEach(function(light) {
+      light.getState(function(err, info) {
+        if (err) {
+          console.log(err);
+        }
+        let h = info.color.hue;
+        h = Math.max(h - 10, 0);
+        light.color(h, info.color.saturation, info.color.brightness, info.kelvin);
+      });
+    });
+  } else if (key === 'w') {
+    client.lights().forEach(function(light) {
+      light.getState(function(err, info) {
+        if (err) {
+          console.log(err);
+        }
+        let s = info.color.saturation;
+        s = Math.min(s + 10, 100);
+        light.color(info.color.hue, s, info.color.brightness, info.kelvin);
+      });
+    });
+  } else if (key === 'x') {
+    client.lights().forEach(function(light) {
+      light.getState(function(err, info) {
+        if (err) {
+          console.log(err);
+        }
+        let s = info.color.saturation;
+        s = Math.max(s - 10, 0);
+        light.color(info.color.hue, s, info.color.brightness, info.kelvin);
+      });
+    });
   } else if (key === '\u0003' || key === '0') { // Ctrl + C
     client.destroy();
     process.exit(); // eslint-disable-line no-process-exit
