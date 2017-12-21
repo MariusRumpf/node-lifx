@@ -110,6 +110,15 @@
 					"infrared": false,
 					"multizone": true
 				}
+			},
+			{
+				"pid": 49,
+				"name": "LIFX Mini Color",
+				"features": {
+					"color": true,
+					"infrared": false,
+					"multizone": true
+				}
 			}
 		]
 	}
