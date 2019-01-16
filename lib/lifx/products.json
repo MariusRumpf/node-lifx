@@ -112,12 +112,152 @@
 				}
 			},
 			{
+				"pid": 36,
+				"name": "LIFX Downlight",
+				"features": {
+					"color": true,
+					"infrared": false,
+					"multizone": false,
+					"chain": false
+				}
+			},
+			{
+				"pid": 37,
+				"name": "LIFX Downlight",
+				"features": {
+					"color": true,
+					"infrared": false,
+					"multizone": false,
+					"chain": false
+				}
+			},
+			{
+				"pid": 38,
+				"name": "LIFX Beam",
+				"features": {
+					"color": true,
+					"infrared": false,
+					"multizone": true,
+					"chain": false
+				}
+			},
+			{
+				"pid": 43,
+				"name": "LIFX A19",
+				"features": {
+					"color": true,
+					"infrared": false,
+					"multizone": false,
+					"chain": false
+				}
+			},
+			{
+				"pid": 44,
+				"name": "LIFX BR30",
+				"features": {
+					"color": true,
+					"infrared": false,
+					"multizone": false,
+					"chain": false
+				}
+			},
+			{
+				"pid": 45,
+				"name": "LIFX+ A19",
+				"features": {
+					"color": true,
+					"infrared": true,
+					"multizone": false,
+					"chain": false
+				}
+			},
+			{
+				"pid": 46,
+				"name": "LIFX+ BR30",
+				"features": {
+					"color": true,
+					"infrared": true,
+					"multizone": false,
+					"chain": false
+				}
+			},
+			{
 				"pid": 49,
 				"name": "LIFX Mini Color",
 				"features": {
 					"color": true,
 					"infrared": false,
 					"multizone": true
+				}
+			},
+			{
+				"pid": 50,
+				"name": "LIFX Mini Day and Dusk",
+				"features": {
+					"color": false,
+					"infrared": false,
+					"multizone": false,
+					"chain": false
+				}
+			},
+			{
+				"pid": 51,
+				"name": "LIFX Mini White",
+				"features": {
+					"color": false,
+					"infrared": false,
+					"multizone": false,
+					"chain": false
+				}
+			},
+			{
+				"pid": 52,
+				"name": "LIFX GU10",
+				"features": {
+					"color": true,
+					"infrared": false,
+					"multizone": false,
+					"chain": false
+				}
+			},
+			{
+				"pid": 55,
+				"name": "LIFX Tile",
+				"features": {
+					"color": true,
+					"infrared": false,
+					"multizone": false,
+					"chain": true
+				}
+			},
+			{
+				"pid": 59,
+				"name": "LIFX Mini Color",
+				"features": {
+					"color": true,
+					"infrared": false,
+					"multizone": false,
+					"chain": false
+				}
+			},
+			{
+				"pid": 60,
+				"name": "LIFX Mini Day and Dusk",
+				"features": {
+					"color": false,
+					"infrared": false,
+					"multizone": false,
+					"chain": false
+				}
+			},
+			{
+				"pid": 61,
+				"name": "LIFX Mini White",
+				"features": {
+					"color": false,
+					"infrared": false,
+					"multizone": false,
+					"chain": false
 				}
 			}
 		]
