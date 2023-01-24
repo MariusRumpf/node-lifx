@@ -1,5 +1,7 @@
 # LIFX Node.js Library
 
+> **Warning**: This repository currently has no active maintainer. For that reason, development is stale. Consider using an active fork, like [lifx-lan-client](https://github.com/node-lifx/lifx-lan-client).
+
 [![NPM Version](https://img.shields.io/npm/v/node-lifx.svg)](https://www.npmjs.com/package/node-lifx)
 [![Build Status](https://img.shields.io/travis/MariusRumpf/node-lifx/master.svg)](https://travis-ci.org/MariusRumpf/node-lifx)
 [![Build status](https://img.shields.io/appveyor/ci/MariusRumpf/node-lifx/master.svg)](https://ci.appveyor.com/project/MariusRumpf/node-lifx)
